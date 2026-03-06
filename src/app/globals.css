@@ -1,0 +1,370 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================================
+   THEME SYSTEM — 8 Themes
+   ================================================================
+   Light themes  : [default] ocean-light  slate-light  forest-light  rose-light
+   Dark themes   : dark      ocean-dark   midnight     forest-dark   rose-dark
+
+   Cara kerja: class diterapkan ke <html> element
+   Contoh: <html class="theme-ocean-dark">
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   1. DEFAULT LIGHT (class kosong / default)
+   ---------------------------------------------------------------- */
+:root,
+.theme-default {
+  --brand-primary:   #2e4f8e;
+  --brand-secondary: #1e3670;
+  --brand-accent:    #4f7be8;
+
+  --bg-page:        #ffffff;
+  --bg-surface:     #eaeef1;
+  --bg-surface-2:   #f1f5f9;
+  --bg-card:        #fafafa;
+  --bg-inline-card: #d3def7;
+  --border-card:    #e2e8f0;
+  --border-subtle:  #f1f5f9;
+
+  --text-primary:   #11244d;
+  --text-secondary: #4b5563;
+  --text-muted:     #9ca3af;
+  --text-inverse:   #ffffff;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(255,255,255,0.95);
+  --border-navbar:  #e5e7eb;
+
+  --shadow-card:       0 1px 3px 0 rgba(0,0,0,0.06), 0 1px 2px 0 rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+  --badge-bg:    #dbeafe;
+  --badge-text:  #1d4ed8;
+}
+
+/* ----------------------------------------------------------------
+   2. DARK (classic dark blue-gray)
+   ---------------------------------------------------------------- */
+.dark,
+.theme-dark {
+  --brand-primary:   #4f7be8;
+  --brand-secondary: #6b96f5;
+  --brand-accent:    #7ca8ff;
+
+  --bg-page:        #0f172a;
+  --bg-surface:     #1f3149;
+  --bg-surface-2:   #3a5279;
+  --bg-card:        #1e293b;
+  --bg-inline-card: #455a7a;
+  --border-card:    #334155;
+  --border-subtle:  #1e293b;
+
+  --text-primary:   #cbddee;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --text-inverse:   #0f172a;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(15,23,42,0.95);
+  --border-navbar:  #334155;
+
+  --shadow-card:       0 1px 3px 0 rgba(0,0,0,0.3), 0 1px 2px 0 rgba(0,0,0,0.2);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.3);
+
+  --badge-bg:    #1e3a5f;
+  --badge-text:  #93c5fd;
+}
+
+/* ----------------------------------------------------------------
+   3. OCEAN LIGHT (teal/cyan)
+   ---------------------------------------------------------------- */
+.theme-ocean-light {
+  --brand-primary:   #0891b2;
+  --brand-secondary: #0e7490;
+  --brand-accent:    #22d3ee;
+
+  --bg-page:        #f0fdff;
+  --bg-surface:     #e0f7fa;
+  --bg-surface-2:   #ccf2f8;
+  --bg-card:        #ffffff;
+  --bg-inline-card: #b2ebf2;
+  --border-card:    #a5f3fc;
+  --border-subtle:  #cffafe;
+
+  --text-primary:   #083344;
+  --text-secondary: #155e75;
+  --text-muted:     #67a5b8;
+  --text-inverse:   #ffffff;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(240,253,255,0.95);
+  --border-navbar:  #a5f3fc;
+
+  --shadow-card:       0 1px 3px 0 rgba(8,51,68,0.08), 0 1px 2px 0 rgba(8,51,68,0.05);
+  --shadow-card-hover: 0 10px 25px -5px rgba(8,51,68,0.12), 0 4px 6px -2px rgba(8,51,68,0.06);
+
+  --badge-bg:    #cffafe;
+  --badge-text:  #0e7490;
+}
+
+/* ----------------------------------------------------------------
+   4. OCEAN DARK (deep sea)
+   ---------------------------------------------------------------- */
+.theme-ocean-dark {
+  --brand-primary:   #22d3ee;
+  --brand-secondary: #06b6d4;
+  --brand-accent:    #67e8f9;
+
+  --bg-page:        #042f3e;
+  --bg-surface:     #0a4a5e;
+  --bg-surface-2:   #0e6079;
+  --bg-card:        #073a4d;
+  --bg-inline-card: #125872;
+  --border-card:    #1a6b89;
+  --border-subtle:  #0a4a5e;
+
+  --text-primary:   #cffafe;
+  --text-secondary: #67e8f9;
+  --text-muted:     #4aa3b8;
+  --text-inverse:   #042f3e;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(4,47,62,0.96);
+  --border-navbar:  #1a6b89;
+
+  --shadow-card:       0 1px 3px 0 rgba(0,0,0,0.4), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.35);
+
+  --badge-bg:    #0e7490;
+  --badge-text:  #cffafe;
+}
+
+/* ----------------------------------------------------------------
+   5. MIDNIGHT (pure dark, near black)
+   ---------------------------------------------------------------- */
+.theme-midnight {
+  --brand-primary:   #818cf8;
+  --brand-secondary: #6366f1;
+  --brand-accent:    #a5b4fc;
+
+  --bg-page:        #09090b;
+  --bg-surface:     #141417;
+  --bg-surface-2:   #1e1e24;
+  --bg-card:        #25252b;
+  --bg-inline-card: #27272a;
+  --border-card:    #3f3f46;
+  --border-subtle:  #27272a;
+
+  --text-primary:   #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted:     #71717a;
+  --text-inverse:   #09090b;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(9,9,11,0.97);
+  --border-navbar:  #27272a;
+
+  --shadow-card:       0 1px 3px 0 rgba(0,0,0,0.5), 0 1px 2px 0 rgba(0,0,0,0.4);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0,0,0,0.6), 0 4px 6px -2px rgba(0,0,0,0.5);
+
+  --badge-bg:    #312e81;
+  --badge-text:  #c7d2fe;
+}
+
+/* ----------------------------------------------------------------
+   6. FOREST LIGHT (green/emerald)
+   ---------------------------------------------------------------- */
+.theme-forest-light {
+  --brand-primary:   #059669;
+  --brand-secondary: #047857;
+  --brand-accent:    #10b981;
+
+  --bg-page:        #f0fdf4;
+  --bg-surface:     #dcfce7;
+  --bg-surface-2:   #bbf7d0;
+  --bg-card:        #ffffff;
+  --bg-inline-card: #a7f3d0;
+  --border-card:    #86efac;
+  --border-subtle:  #dcfce7;
+
+  --text-primary:   #052e16;
+  --text-secondary: #166534;
+  --text-muted:     #4ade80;
+  --text-inverse:   #ffffff;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(240,253,244,0.95);
+  --border-navbar:  #bbf7d0;
+
+  --shadow-card:       0 1px 3px 0 rgba(5,46,22,0.08), 0 1px 2px 0 rgba(5,46,22,0.05);
+  --shadow-card-hover: 0 10px 25px -5px rgba(5,46,22,0.12), 0 4px 6px -2px rgba(5,46,22,0.06);
+
+  --badge-bg:    #d1fae5;
+  --badge-text:  #047857;
+}
+
+/* ----------------------------------------------------------------
+   7. FOREST DARK (dark green)
+   ---------------------------------------------------------------- */
+.theme-forest-dark {
+  --brand-primary:   #34d399;
+  --brand-secondary: #10b981;
+  --brand-accent:    #6ee7b7;
+
+  --bg-page:        #052e16;
+  --bg-surface:     #0a3d1f;
+  --bg-surface-2:   #14532d;
+  --bg-card:        #064e22;
+  --bg-inline-card: #166534;
+  --border-card:    #15803d;
+  --border-subtle:  #0a3d1f;
+
+  --text-primary:   #d1fae5;
+  --text-secondary: #6ee7b7;
+  --text-muted:     #4ade80;
+  --text-inverse:   #052e16;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(5,46,22,0.96);
+  --border-navbar:  #15803d;
+
+  --shadow-card:       0 1px 3px 0 rgba(0,0,0,0.4), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.35);
+
+  --badge-bg:    #14532d;
+  --badge-text:  #86efac;
+}
+
+/* ----------------------------------------------------------------
+   8. ROSE LIGHT (warm pink/rose)
+   ---------------------------------------------------------------- */
+.theme-rose-light {
+  --brand-primary:   #e11d48;
+  --brand-secondary: #be123c;
+  --brand-accent:    #fb7185;
+
+  --bg-page:        #fff1f2;
+  --bg-surface:     #ffe4e6;
+  --bg-surface-2:   #fecdd3;
+  --bg-card:        #ffffff;
+  --bg-inline-card: #fda4af;
+  --border-card:    #fda4af;
+  --border-subtle:  #ffe4e6;
+
+  --text-primary:   #4c0519;
+  --text-secondary: #881337;
+  --text-muted:     #fb7185;
+  --text-inverse:   #ffffff;
+
+  --text-primary-brand: #e0e7f5;
+  --text-secondary-brand: #cbd5e1;
+
+  --bg-navbar:      rgba(255,241,242,0.95);
+  --border-navbar:  #fecdd3;
+
+  --shadow-card:       0 1px 3px 0 rgba(76,5,25,0.08), 0 1px 2px 0 rgba(76,5,25,0.05);
+  --shadow-card-hover: 0 10px 25px -5px rgba(76,5,25,0.12), 0 4px 6px -2px rgba(76,5,25,0.06);
+
+  --badge-bg:    #ffe4e6;
+  --badge-text:  #be123c;
+}
+
+/* ================================================================
+   BASE STYLES — semua pakai CSS variables
+   ================================================================ */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ================================================================
+   COMPONENT CLASSES
+   ================================================================ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 0.5rem; background-color: var(--brand-primary);
+  padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--text-inverse); text-decoration: none;
+  transition: filter 0.15s, transform 0.15s;
+  border: none; cursor: pointer;
+}
+.btn-primary:hover { filter: brightness(1.25); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary-brand {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 0.5rem; background-color: var(--brand-accent);
+  padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--text-inverse); text-decoration: none;
+  transition: filter 0.15s, transform 0.15s;
+  border: none; cursor: pointer;
+}
+.btn-primary-brand:hover { filter: brightness(0.85); }
+.btn-primary-brand:active { transform: scale(0.98); }
+.btn-primary-brand:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 0.5rem; border: 1.5px solid var(--brand-primary);
+  padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--brand-primary); text-decoration: none;
+  transition: background-color 0.15s;
+  background: transparent; cursor: pointer;
+}
+.btn-outline:hover { background-color: var(--brand-accent); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 1rem; padding: 0.5rem 1rem;
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--text-primary); text-decoration: none;
+  transition: background-color 0.15s;
+  background: var(--bg-surface); border: none; cursor: pointer;
+}
+.btn-ghost:hover { background-color: var(--brand-accent); color: var(--text-primary); }
+
+.card {
+  border-radius: 0.75rem;
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-card);
+  transition: box-shadow 0.2s, background-color 0.25s, border-color 0.25s;
+}
+.card:hover { box-shadow: var(--shadow-card-hover); }
+
+.badge {
+  display: inline-flex; align-items: center;
+  border-radius: 9999px; padding: 0.125rem 0.625rem;
+  font-size: 0.75rem; font-weight: 500;
+}
+.badge-blue {
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+.section-title {
+  font-size: 1.875rem; font-weight: 700;
+  letter-spacing: -0.025em; color: var(--text-primary);
+}
+.section-subtitle {
+  margin-top: 1rem; font-size: 1.125rem; color: var(--text-secondary);
+}
