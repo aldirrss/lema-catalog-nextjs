@@ -8,6 +8,14 @@ const VERSION_COLORS: Record<string, string> = {
   '18': '#0891b2',
   '17': '#059669',
   '16': '#d97706',
+  '15': '#b91c1c',
+  '14': '#0f766e',
+  '13': '#1e40af',
+  '12': '#047857',
+  '11': '#c2410c',
+  '10': '#7c3aed',
+  '9':  '#dc2626',
+  '8':  '#ea580c',
 };
 
 export default function ModuleCard({ module }: { module: Module }) {

@@ -9,7 +9,7 @@ interface Props {
   odooUrl: string;
 }
 
-const REVIEWS_PER_PAGE = 10;
+const REVIEWS_PER_PAGE = 5;
 
 // ─── Star Rating ──────────────────────────────────────────────
 function StarRating({
@@ -406,7 +406,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
       {/* ── Cover Image ─────────────────────────────────────── */}
       {coverUrl && (
         <div style={{
-          position: 'relative', width: '100%', aspectRatio: '16/6',
+          position: 'relative', width: '100%', aspectRatio: '16/9', marginBottom: '1.5rem',
           borderRadius: '1rem', overflow: 'hidden', backgroundColor: 'var(--bg-surface)',
           boxShadow: 'var(--shadow-card-hover)',
         }}>
