@@ -1,10 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Module } from '@/types';
-import { formatPrice, odooVersionLabel } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
+
+const VERSION_COLORS: Record<string, string> = {
+  '19': '#6d28d9',
+  '18': '#0891b2',
+  '17': '#059669',
+  '16': '#d97706',
+};
 
 export default function ModuleCard({ module }: { module: Module }) {
-  const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:8018';
+  const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:2018';
   const imageUrl = module.cover_image_url
     ? (module.cover_image_url.startsWith('http') ? module.cover_image_url : `${odooUrl}${module.cover_image_url}`)
     : null;
@@ -78,9 +85,26 @@ export default function ModuleCard({ module }: { module: Module }) {
             {module.category && (
               <span className="badge badge-blue">{module.category.name}</span>
             )}
-            <span className="badge" style={{ backgroundColor: 'var(--bg-surface-2)', color: 'var(--text-secondary)' }}>
-              {odooVersionLabel(module.odoo_version)}
-            </span>
+            {module.versions && module.versions.length > 0 ? (
+              module.versions.map((v) => (
+                <span
+                  key={v.id}
+                  className="badge"
+                  style={{
+                    backgroundColor: `${VERSION_COLORS[v.odoo_version] ?? '#64748b'}18`,
+                    color: VERSION_COLORS[v.odoo_version] ?? 'var(--text-secondary)',
+                    border: `1px solid ${VERSION_COLORS[v.odoo_version] ?? '#64748b'}40`,
+                    fontWeight: 600,
+                  }}
+                >
+                  Odoo {v.odoo_version}
+                </span>
+              ))
+            ) : (
+              <span className="badge" style={{ backgroundColor: 'var(--bg-surface-2)', color: 'var(--text-secondary)' }}>
+                —
+              </span>
+            )}
           </div>
 
           <h3 style={{

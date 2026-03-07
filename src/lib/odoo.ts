@@ -108,8 +108,9 @@ export async function getModuleBySlug(
       {
         next: {
           revalidate: REVALIDATE_SECONDS,
-          tags: ['modules', `module-${slug}`], // bisa revalidate per-slug
+          tags: ['modules', `module-${slug}`],
         },
+        'cache': 'no-store',
       },
     );
     return res.data;
@@ -130,6 +131,23 @@ export async function getCategories(): Promise<Category[]> {
     },
   );
   return res.data;
+}
+
+/** Submit feedback/rating untuk sebuah module. */
+export async function submitModuleFeedback(body: {
+  module_id: number;
+  author_name: string;
+  email?: string;
+  rating: number;
+  comment: string;
+}): Promise<{ success: boolean; message?: string; error?: string }> {
+  const res = await fetch(`${ODOO_BASE_URL}/api/module-feedback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    cache: 'no-store',
+  });
+  return res.json();
 }
 
 /** Submit contact form ke Odoo. Tidak pakai cache. */

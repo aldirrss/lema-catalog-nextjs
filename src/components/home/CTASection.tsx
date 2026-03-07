@@ -18,7 +18,8 @@ export default function CTASection() {
             Explore Modules
           </Link>
 
-          <Link href="/contact" className="btn-outline px-8 py-3 text-base"
+          {/* link to mailto contact with prefilled subject and body */}
+          <Link href="mailto:aldirrss@icloud.com?subject=Inquiry%20about%20Odoo%20Solution" className="btn-outline px-8 py-3 text-base"
             style={{ borderColor: 'var(--text-inverse)', color: 'var(--text-inverse)' }}>
             Contact Us
           </Link>

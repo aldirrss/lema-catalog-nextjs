@@ -6,6 +6,7 @@ import { useState } from 'react';
 import ThemePicker from './ThemePicker';
 import LangSwitcher from './LangSwitcher';
 import { useLang } from './LangProvider';
+import Image from 'next/image';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -41,14 +42,14 @@ export default function Navbar() {
           textDecoration: 'none', flexShrink: 0,
         }}>
           <div style={{
-            display: 'flex', height: '2rem', width: '2rem',
+            display: 'flex', padding: '0.1rem', width: '2.5rem', height: '2.5rem',
             alignItems: 'center', justifyContent: 'center',
-            borderRadius: '0.5rem', backgroundColor: 'var(--brand-primary)',
+            borderRadius: '0.5rem', backgroundColor: 'var(--bg-card)',
           }}>
-            <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white' }}>L</span>
+            <Image src="/icon.png" alt="Lema Core Logo" width={32} height={32} />
           </div>
           <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
-            Lema<span style={{ color: 'var(--brand-primary)' }}> Core</span>
+            Lema<span style={{ color: 'var(--brand-primary)' }}>Core</span>
           </span>
         </Link>
 
@@ -62,7 +63,7 @@ export default function Navbar() {
               fontSize: '0.875rem', fontWeight: 500,
               textDecoration: 'none',
               transition: 'background-color 0.15s, color 0.15s',
-              backgroundColor: pathname === link.href ? 'var(--bg-surface-2)' : 'transparent',
+              backgroundColor: pathname === link.href ? 'var(--bg-surface)' : 'transparent',
               color: pathname === link.href ? 'var(--brand-primary)' : 'var(--text-secondary)',
               whiteSpace: 'nowrap',
             }}>

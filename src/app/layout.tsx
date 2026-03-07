@@ -17,8 +17,8 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.tech'),
   icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+    icon: '/favicon.png',
+    apple: '/favicon.png',
   },
   title: {
     default: 'Lema Core Technologies — Odoo Module Catalog',

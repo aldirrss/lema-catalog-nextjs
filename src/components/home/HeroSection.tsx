@@ -37,7 +37,7 @@ export default function HeroSection() {
     setTimeout(() => {
       setCurrent(index);
       setAnimating(false);
-    }, 3000);
+    }, 8000);
   };
   
   const next = () => goTo((current + 1) % total);
@@ -122,10 +122,10 @@ export default function HeroSection() {
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem',
         }}>
           {[
-            { value: '50+', label: 'Modules Published' },
-            { value: '100+', label: 'Happy Clients' },
+            { value: '10+', label: 'Modules Published' },
+            { value: '10+', label: 'Happy Clients' },
             { value: '5+', label: 'Years Experience' },
-            { value: '4.8★', label: 'Average Rating' },
+            { value: '0★', label: 'Average Rating' },
           ].map((stat) => (
             <div key={stat.label} style={{
               textAlign: 'center',

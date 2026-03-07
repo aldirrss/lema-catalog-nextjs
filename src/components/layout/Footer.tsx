@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLang } from './LangProvider';
 
 export default function Footer() {
@@ -9,7 +10,7 @@ export default function Footer() {
   return (
     <footer style={{
       borderTop: '1px solid var(--border-card)',
-      backgroundColor: 'var(--bg-surface-2)',
+      backgroundColor: 'var(--bg-surface)',
       transition: 'background-color 0.25s',
     }}>
       <div style={{ margin: '0 auto', maxWidth: '80rem', padding: '3rem 1.5rem' }}>
@@ -19,15 +20,9 @@ export default function Footer() {
           {/* Brand */}
           <div style={{ gridColumn: 'span 2' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-              <div style={{
-                display: 'flex', height: '2rem', width: '2rem',
-                alignItems: 'center', justifyContent: 'center',
-                borderRadius: '0.5rem', backgroundColor: 'var(--brand-primary)',
-              }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white' }}>L</span>
-              </div>
+              <Image src="/icon.png" alt="Lema Core Logo" width={56} height={56} />
               <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                Lema<span style={{ color: 'var(--brand-primary)' }}> Core Technologies</span>
+                Lema<span style={{ color: 'var(--brand-primary)' }}>Core Technologies</span>
               </span>
             </div>
             <p style={{ marginTop: '0.75rem', maxWidth: '20rem', fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>

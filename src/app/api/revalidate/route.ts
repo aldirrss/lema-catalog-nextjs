@@ -9,8 +9,8 @@
  *
  * Body JSON (opsional):
  * {
- *   "type": "module" | "catalog" | "all",  // apa yang mau di-revalidate
- *   "slug": "nama-modul"                   // wajib jika type = "module"
+ *   "type": "module" | "catalog" | "feedback" | "all",
+ *   "slug": "nama-modul"   // wajib jika type = "module" atau "feedback"
  * }
  *
  * Jika body tidak dikirim, default revalidate semua halaman.
@@ -24,8 +24,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // ----------------------------------------------------------------
 
 type RevalidateBody = {
-  type?: 'module' | 'catalog' | 'all';
-  slug?: string; // URL slug modul, dipakai saat type = "module"
+  type?: 'module' | 'catalog' | 'feedback' | 'all';
+  slug?: string; // URL slug modul, dipakai saat type = "module" | "feedback"
 };
 
 type RevalidateResult = {
@@ -48,14 +48,26 @@ export async function POST(req: NextRequest): Promise<NextResponse<RevalidateRes
   if (!expectedSecret) {
     console.error('[revalidate] REVALIDATE_SECRET env variable is not set!');
     return NextResponse.json(
-      { revalidated: false, paths: [], tags: [], timestamp: new Date().toISOString(), error: 'Server misconfiguration: REVALIDATE_SECRET not set' },
+      {
+        revalidated: false,
+        paths: [],
+        tags: [],
+        timestamp: new Date().toISOString(),
+        error: 'Server misconfiguration: REVALIDATE_SECRET not set',
+      },
       { status: 500 },
     );
   }
 
   if (secret !== expectedSecret) {
     return NextResponse.json(
-      { revalidated: false, paths: [], tags: [], timestamp: new Date().toISOString(), error: 'Invalid or missing secret token' },
+      {
+        revalidated: false,
+        paths: [],
+        tags: [],
+        timestamp: new Date().toISOString(),
+        error: 'Invalid or missing secret token',
+      },
       { status: 401 },
     );
   }
@@ -75,33 +87,68 @@ export async function POST(req: NextRequest): Promise<NextResponse<RevalidateRes
   try {
     // 3. Revalidate berdasarkan type
     switch (body.type) {
+
       // ----- Revalidate halaman modul spesifik -----
       case 'module': {
         if (!body.slug) {
           return NextResponse.json(
-            { revalidated: false, paths: [], tags: [], timestamp: new Date().toISOString(), error: 'slug is required when type is "module"' },
+            {
+              revalidated: false,
+              paths: [],
+              tags: [],
+              timestamp: new Date().toISOString(),
+              error: 'slug is required when type is "module"',
+            },
             { status: 400 },
           );
         }
 
-        // Revalidate halaman detail modul
+        // Halaman detail modul
         revalidatePath(`/modules/${body.slug}`);
         revalidatedPaths.push(`/modules/${body.slug}`);
 
-        // Revalidate tag cache untuk modul ini
-        revalidateTag(`module-${body.slug}`, {});
+        // Tag cache per-slug
+        revalidateTag(`module-${body.slug}`, 'max');
         revalidatedTags.push(`module-${body.slug}`);
 
-        // Catalog & homepage juga perlu update (list berubah)
+        // Catalog & homepage ikut update (list modul bisa berubah)
         revalidatePath('/catalog');
         revalidatePath('/');
         revalidatedPaths.push('/catalog', '/');
 
         // Tag global modules
-        revalidateTag('modules', {});
+        revalidateTag('modules', 'max');
         revalidatedTags.push('modules');
 
         console.log(`[revalidate] Module "${body.slug}" revalidated`);
+        break;
+      }
+
+      // ----- Revalidate feedback/review modul spesifik -----
+      // Dipanggil dari Odoo ketika ada feedback baru yang diapprove
+      case 'feedback': {
+        if (!body.slug) {
+          return NextResponse.json(
+            {
+              revalidated: false,
+              paths: [],
+              tags: [],
+              timestamp: new Date().toISOString(),
+              error: 'slug is required when type is "feedback"',
+            },
+            { status: 400 },
+          );
+        }
+
+        // Cukup revalidate halaman detail modul ybs
+        revalidatePath(`/modules/${body.slug}`);
+        revalidatedPaths.push(`/modules/${body.slug}`);
+
+        // Tag per-slug sudah cukup — tidak perlu revalidate catalog
+        revalidateTag(`module-${body.slug}`, 'max');
+        revalidatedTags.push(`module-${body.slug}`);
+
+        console.log(`[revalidate] Feedback for "${body.slug}" revalidated`);
         break;
       }
 
@@ -110,7 +157,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<RevalidateRes
         revalidatePath('/catalog');
         revalidatedPaths.push('/catalog');
 
-        revalidateTag('modules', {});
+        revalidateTag('modules', 'max');
         revalidatedTags.push('modules');
 
         console.log('[revalidate] Catalog revalidated');
@@ -125,8 +172,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<RevalidateRes
         revalidatePath('/modules/[slug]', 'page');
         revalidatedPaths.push('/', '/catalog', '/modules/[slug]');
 
-        revalidateTag('modules', {});
-        revalidateTag('categories', {});
+        revalidateTag('modules', 'max');
+        revalidateTag('categories', 'max');
         revalidatedTags.push('modules', 'categories');
 
         console.log('[revalidate] All paths revalidated');
@@ -140,6 +187,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<RevalidateRes
       tags: revalidatedTags,
       timestamp: new Date().toISOString(),
     });
+
   } catch (err) {
     console.error('[revalidate] Error during revalidation:', err);
     return NextResponse.json(
