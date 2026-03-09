@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ModuleDetail, ModuleFeedback, DependModule } from '@/types';
+import { useLang } from '../layout/LangProvider';
 
 interface Props {
   mod: ModuleDetail;
@@ -149,6 +150,8 @@ function ReviewCard({ fb }: { fb: ModuleFeedback }) {
     fb.author_name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % palette.length
   ];
 
+  const { lang } = useLang();
+
   return (
     <div className="card" style={{ padding: '1.25rem', display: 'flex', gap: '1rem' }}>
       {/* Avatar */}
@@ -169,7 +172,7 @@ function ReviewCard({ fb }: { fb: ModuleFeedback }) {
             </p>
             {fb.created_date && (
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.125rem' }}>
-                {new Date(fb.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                {new Date(fb.created_date).toLocaleDateString(lang === 'ar' ? 'ar-SA' : lang === 'id' ? 'id-ID' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
               </p>
             )}
           </div>
@@ -188,11 +191,12 @@ function ReviewCard({ fb }: { fb: ModuleFeedback }) {
 // ─── Reviews List with Summary + Pagination ──────────────────
 function ReviewsList({ feedbacks }: { feedbacks: ModuleFeedback[] }) {
   const [page, setPage] = useState(1);
+  const { t } = useLang();
 
   if (feedbacks.length === 0) {
     return (
       <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '1.5rem' }}>
-        No reviews yet. Be the first to share your feedback on this module!
+        {t.module.review.noReviews} {t.module.review.beFirst}
       </p>
     );
   }
@@ -220,7 +224,7 @@ function ReviewsList({ feedbacks }: { feedbacks: ModuleFeedback[] }) {
           </div>
           <StarRating value={Math.round(avgRating)} readonly size={16} />
           <p style={{ margin: '0.375rem 0 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {feedbacks.length} review{feedbacks.length !== 1 ? 's' : ''}
+            {feedbacks.length} {feedbacks.length === 1 ? t.module.review.review : t.module.review.reviews}
           </p>
         </div>
         {/* Distribution bars */}
@@ -251,7 +255,7 @@ function ReviewsList({ feedbacks }: { feedbacks: ModuleFeedback[] }) {
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.25rem', gap: '0.5rem', flexWrap: 'wrap' }}>
           <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: 0 }}>
-            Showing {start + 1}–{Math.min(start + REVIEWS_PER_PAGE, feedbacks.length)} of {feedbacks.length} reviews
+            {t.module.review.showing} {start + 1}–{Math.min(start + REVIEWS_PER_PAGE, feedbacks.length)} {t.module.review.of} {feedbacks.length} {t.module.review.reviews}
           </p>
           <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center' }}>
             <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} style={pgBtn(false, page === 1)}>‹</button>
@@ -299,7 +303,8 @@ function pgBtn(active: boolean, disabled: boolean): React.CSSProperties {
 // ─── FAQ Accordion ───────────────────────────────────────────
 function FAQAccordion({ faqs }: { faqs: import('@/types').FAQ[] }) {
   const [open, setOpen] = useState<number | null>(null);
-  if (faqs.length === 0) return <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No FAQs available.</p>;
+  const { t } = useLang();
+  if (faqs.length === 0) return <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>{t.module.faq.noFaq}</p>;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       {faqs.map((faq) => (
@@ -334,6 +339,7 @@ function FAQAccordion({ faqs }: { faqs: import('@/types').FAQ[] }) {
 // ─── Depends Slider ──────────────────────────────────────────
 function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl: string }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const { t } = useLang();
   const VISIBLE = 3;
   const CARD_GAP = 16;
   const CARD_WIDTH = 200;
@@ -350,7 +356,7 @@ function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl:
     <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-card)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
         <h2 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-          🧩 Other Modules
+          {t.module.otherModules}
         </h2>
         {modules.length > VISIBLE && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -376,6 +382,7 @@ function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl:
       <div style={{ position: 'relative' }}>
         <div
           ref={trackRef}
+          className="depends-track"
           style={{
             display: 'flex',
             gap: `${CARD_GAP}px`,
@@ -499,6 +506,8 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   const [fbMsg, setFbMsg] = useState('');
   const [feedbacks, setFeedbacks] = useState<ModuleFeedback[]>(mod.feedbacks ?? []);
 
+  const { t, lang } = useLang();
+
   const images = mod.screenshots.map((ss, i) => ({
     url: ss.image_url.startsWith('http') ? ss.image_url : `${odooUrl}${ss.image_url}`,
     alt: ss.caption || `Screenshot ${i + 1}`,
@@ -512,7 +521,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   const handleFeedbackSubmit = async () => {
     if (!fbName.trim() || !fbComment.trim() || fbRating === 0) {
       setFbStatus('error');
-      setFbMsg('Please fill in your name, a comment, and a rating.');
+      setFbMsg(t.module.review.errorFields);
       return;
     }
     setFbStatus('loading');
@@ -525,7 +534,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
       const data = await res.json();
       if (data.success) {
         setFbStatus('success');
-        setFbMsg('Thank you for your feedback!');
+        setFbMsg(t.module.review.success);
         setFeedbacks((prev) => [
           { id: Date.now(), author_name: fbName, rating: fbRating, comment: fbComment, created_date: new Date().toISOString() },
           ...prev,
@@ -533,11 +542,11 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
         setFbName(''); setFbEmail(''); setFbComment(''); setFbRating(0);
       } else {
         setFbStatus('error');
-        setFbMsg(data.error ?? 'Something went wrong.');
+        setFbMsg(data.error ?? t.module.purchase.error);
       }
     } catch {
       setFbStatus('error');
-      setFbMsg('Network error. Please try again.');
+      setFbMsg(t.module.purchase.error);
     }
   };
 
@@ -555,6 +564,10 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
     color: active ? '#fff' : 'var(--text-secondary)',
     transition: 'background 0.15s, color 0.15s', whiteSpace: 'nowrap' as const,
   });
+
+  const formatDateLabel = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString(lang === 'ar' ? 'ar-SA' : lang === 'id' ? 'id-ID' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   return (
     <div>
@@ -609,8 +622,8 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
 
       {/* ── Main Tabs ────────────────────────────────────────── */}
       <div style={{ borderBottom: '1px solid var(--border-card)', marginBottom: '1.5rem', display: 'flex', gap: 0, overflowX: 'auto' }}>
-        <button style={tabStyle(mainTab === 'description')} onClick={() => setMainTab('description')}>📄 Description</button>
-        <button style={tabStyle(mainTab === 'license')} onClick={() => setMainTab('license')}>📋 License</button>
+        <button style={tabStyle(mainTab === 'description')} onClick={() => setMainTab('description')}>📄 {t.module.description}</button>
+        <button style={tabStyle(mainTab === 'license')} onClick={() => setMainTab('license')}>📋 {t.module.license}</button>
       </div>
 
       {/* ── License Tab ──────────────────────────────────────── */}
@@ -618,11 +631,11 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
         <div className="card" style={{ padding: '2rem' }}>
           {mod.license ? (
             <>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>License</h2>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>{t.module.license}</h2>
               <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: mod.license }} />
             </>
           ) : (
-            <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No license information available.</p>
+            <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>{t.module.noLicense}</p>
           )}
         </div>
       )}
@@ -632,12 +645,12 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
         <div>
           {/* Sub-tabs */}
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-            <button style={subTabStyle(descTab === 'overview')} onClick={() => setDescTab('overview')}>Overview</button>
+            <button style={subTabStyle(descTab === 'overview')} onClick={() => setDescTab('overview')}>{t.module.overview}</button>
             <button style={subTabStyle(descTab === 'features')} onClick={() => setDescTab('features')}>
-              Features {mod.features.length > 0 && `(${mod.features.length})`}
+              {t.module.features} {mod.features.length > 0 && `(${mod.features.length})`}
             </button>
             <button style={subTabStyle(descTab === 'release_notes')} onClick={() => setDescTab('release_notes')}>
-              Release Notes {(mod.release_notes?.length ?? 0) > 0 && `(${mod.release_notes.length})`}
+              {t.module.releaseNotes} {(mod.release_notes?.length ?? 0) > 0 && `(${mod.release_notes.length})`}
             </button>
             <button style={subTabStyle(descTab === 'faq')} onClick={() => setDescTab('faq')}>
               FAQ {(mod.faqs?.length ?? 0) > 0 && `(${mod.faqs.length})`}
@@ -649,13 +662,13 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               {mod.description && (
                 <div className="card" style={{ padding: '1.75rem' }}>
-                  <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>About this module</h3>
+                  <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>{t.module.aboutModule}</h3>
                   <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.9375rem' }} dangerouslySetInnerHTML={{ __html: mod.description }} />
                 </div>
               )}
               {images.length > 0 && (
                 <div>
-                  <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>Screenshots</h3>
+                  <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem', marginTop: 0 }}>{t.module.screenshots}</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
                     {images.map((img, i) => (
                       <div
@@ -737,7 +750,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
                               margin: 0, fontSize: '0.8125rem',
                               color: 'var(--text-muted)', lineHeight: 1.5,
                             }}>
-                              Screenshot {i + 1}
+                              {t.module.screenshots} {i + 1}
                             </p>
                           )}
                         </div>
@@ -753,7 +766,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
           {descTab === 'features' && (
             <div>
               {mod.features.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No features listed.</p>
+                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>{t.module.noFeatures}</p>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
                   {mod.features.map((feat) => (
@@ -778,7 +791,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
           {descTab === 'release_notes' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {(!mod.release_notes || mod.release_notes.length === 0) ? (
-                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No release notes available.</p>
+                <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>{t.module.noReleaseNotes}</p>
               ) : (
                 mod.release_notes.map((rn) => (
                   <div key={rn.id} className="card" style={{ padding: '1.5rem' }}>
@@ -788,7 +801,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
                       </span>
                       {rn.release_date && (
                         <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                          {new Date(rn.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          {formatDateLabel(rn.release_date)}
                         </span>
                       )}
                     </div>
@@ -812,7 +825,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
       {/* ── Reviews & Feedback ───────────────────────────────── */}
       <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-card)' }}>
         <h2 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.5rem', marginTop: 0 }}>
-          ⭐ Reviews & Feedback
+          ⭐ {t.module.review.title}
         </h2>
 
         {/* Riwayat reviewer — summary + paginated list */}
@@ -821,7 +834,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
         {/* Form tambah review */}
         <div className="card" style={{ padding: '1.75rem' }}>
           <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem', marginTop: 0 }}>
-            Leave a Review
+            {t.module.review.leaveReview}
           </h3>
 
           {fbStatus === 'success' ? (
@@ -832,36 +845,36 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-                  Your Rating <span style={{ color: '#ef4444' }}>*</span>
+                  {t.module.review.yourRating} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <StarRating value={fbRating} onChange={setFbRating} size={28} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-                    Name <span style={{ color: '#ef4444' }}>*</span>
+                    {t.module.review.name} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
-                  <input type="text" value={fbName} onChange={(e) => setFbName(e.target.value)} placeholder="Your name" style={inputStyle} />
+                  <input type="text" value={fbName} onChange={(e) => setFbName(e.target.value)} placeholder={t.module.review.name} style={inputStyle} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-                    Email <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(optional)</span>
+                    {t.module.review.emailOptional}
                   </label>
                   <input type="email" value={fbEmail} onChange={(e) => setFbEmail(e.target.value)} placeholder="your@email.com" style={inputStyle} />
                 </div>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-                  Comment <span style={{ color: '#ef4444' }}>*</span>
+                  {t.module.review.comment} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <textarea value={fbComment} onChange={(e) => setFbComment(e.target.value)} placeholder="Share your experience with this module..." rows={4} style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }} />
+                <textarea value={fbComment} onChange={(e) => setFbComment(e.target.value)} placeholder={t.module.review.commentPlaceholder} rows={4} style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }} />
               </div>
               {fbStatus === 'error' && (
                 <p style={{ color: '#ef4444', fontSize: '0.875rem', margin: 0 }}>⚠️ {fbMsg}</p>
               )}
               <div>
                 <button onClick={handleFeedbackSubmit} disabled={fbStatus === 'loading'} className="btn-primary" style={{ opacity: fbStatus === 'loading' ? 0.7 : 1 }}>
-                  {fbStatus === 'loading' ? 'Submitting…' : 'Submit'}
+                  {fbStatus === 'loading' ? t.module.review.submitting : t.module.review.submit}
                 </button>
               </div>
             </div>

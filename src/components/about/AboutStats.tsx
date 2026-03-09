@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLang } from '../layout/LangProvider';
 
 export default function AboutStats() {
   const [averageRating, setAverageRating] = useState(0);
   const [publishedModulesCount, setPublishedModulesCount] = useState(0);
+  const { t } = useLang();
 
   useEffect(() => {
     async function fetchStats() {
@@ -21,10 +23,10 @@ export default function AboutStats() {
   }, []);
 
   const stats = [
-    { value: `${publishedModulesCount}+`, label: 'Modules Published' },
-    { value: '10+',                        label: 'Happy Clients' },
-    { value: '5+',                         label: 'Years Experience' },
-    { value: `${averageRating.toFixed(1)}★`, label: 'Average Rating' },
+    { value: `${publishedModulesCount}+`, label: t.about.modulesPublished },
+    { value: '10+',                        label: t.about.happyClients },
+    { value: '5+',                         label: t.about.yearsExp },
+    { value: `${averageRating.toFixed(1)}★`, label: t.about.avgRating },
   ];
 
   return (

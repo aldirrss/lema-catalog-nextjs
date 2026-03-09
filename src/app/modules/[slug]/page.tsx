@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getModuleBySlug, getModules } from '@/lib/odoo';
-import { formatDate } from '@/lib/utils';
 import ModuleDetailClient from '@/components/catalog/ModuleDetailClient';
 import ModuleSidebar from '@/components/catalog/ModuleSidebar';
 import ModuleNavigation from '@/components/catalog/ModuleNavigation';
+import ModuleDetailHeader from '@/components/catalog/ModuleDetailHeader';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -24,24 +23,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: mod.cover_image_url ? [{ url: mod.cover_image_url }] : [],
     },
   };
-}
-
-/** Render versi sebagai badge-badge kecil, ambil dari versions array */
-function VersionBadges({ versions }: { versions: { id: number; odoo_version: string }[] }) {
-  if (!versions || versions.length === 0) return null;
-  return (
-    <>
-      {versions.map((v) => (
-        <span
-          key={v.id}
-          className="badge"
-          style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
-        >
-          Odoo {v.odoo_version}
-        </span>
-      ))}
-    </>
-  );
 }
 
 export default async function ModuleDetailPage({ params }: PageProps) {
@@ -64,50 +45,25 @@ export default async function ModuleDetailPage({ params }: PageProps) {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-page)' }}>
-      {/* Breadcrumb */}
-      <div style={{ backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-card)' }}>
-        <div style={{ margin: '0 auto', maxWidth: '80rem', padding: '0.75rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-            <Link href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</Link>
-            <span>/</span>
-            <Link href="/catalog" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Catalog</Link>
-            <span>/</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{mod.name}</span>
-          </nav>
-          <Link href="/catalog" className="btn-back btn-back-desktop">
-            ← Back to Catalog
-          </Link>
-        </div>
-      </div>
+      {/* Localized Header (Breadcrumb + Back Button) */}
+      <ModuleDetailHeader moduleName={mod.name} />
 
       <div style={{ margin: '0 auto', maxWidth: '80rem', padding: '2.5rem 1.5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2.5rem' }} className="detail-grid">
 
           {/* Main Content */}
           <div style={{ minWidth: 0 }}>
-            {/* Badge + meta row — selalu tampil di atas cover */}
-            <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
-              {mod.category && <span className="badge badge-blue">{mod.category.name}</span>}
-              <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                <svg style={{ height: '1rem', width: '1rem', fill: '#f59e0b' }} viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{mod.rating.toFixed(1)}</span>
-                {mod.created_date && <span>· Published {formatDate(mod.created_date)}</span>}
-              </span>
-            </div>
-
-            {/* Client-side interactive content */}
+            {/* Localized Metadata (Category, Rating, Date) */}
             <ModuleDetailClient mod={mod} odooUrl={odooUrl} />
 
-            {/* Prev / Next navigation */}
+            {/* Localized Prev / Next navigation */}
             <ModuleNavigation
               prev={prevModule ? { slug: prevModule.slug, name: prevModule.name } : null}
               next={nextModule ? { slug: nextModule.slug, name: nextModule.name } : null}
             />
           </div>
 
-          {/* Sidebar — client component (needs useState for version selector) */}
+          {/* Sidebar */}
           <div>
             <ModuleSidebar mod={mod} />
           </div>
@@ -118,33 +74,6 @@ export default async function ModuleDetailPage({ params }: PageProps) {
       <style>{`
         @media (min-width: 1024px) {
           .detail-grid { grid-template-columns: 2fr 1fr !important; }
-        }
-        .btn-back {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          border: 1.5px solid var(--border-card);
-          background: var(--bg-card);
-          color: var(--text-secondary);
-          text-decoration: none;
-          font-size: 0.875rem;
-          font-weight: 500;
-          transition: all 0.15s;
-        }
-        .btn-back:hover {
-          border-color: var(--brand-primary);
-          color: var(--brand-primary);
-          background: var(--bg-surface);
-        }
-        .btn-back-desktop {
-          display: none;
-        }
-        @media (min-width: 640px) {
-          .btn-back-desktop {
-            display: inline-flex;
-          }
         }
       `}</style>
     </div>

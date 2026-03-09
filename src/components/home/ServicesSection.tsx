@@ -1,38 +1,40 @@
-const SERVICES = [
-  {
-    icon: '⚙️',
-    title: 'Odoo Development',
-    description:
-      'Custom module development tailored to your business processes. From simple tweaks to complex integrations.',
-  },
-  {
-    icon: '🎨',
-    title: 'Odoo Customization',
-    description:
-      'Modify existing Odoo modules to perfectly match your workflow without breaking core functionality.',
-  },
-  {
-    icon: '🔗',
-    title: 'Odoo Integration',
-    description:
-      'Connect Odoo with external systems — e-commerce, payment gateways, government APIs, and more.',
-  },
-  {
-    icon: '🚀',
-    title: 'ERP Implementation',
-    description:
-      'End-to-end Odoo implementation with data migration, training, and ongoing support.',
-  },
-];
+'use client';
+
+import { useLang } from '../layout/LangProvider';
 
 export default function ServicesSection() {
+  const { t } = useLang();
+
+  const SERVICES = [
+    {
+      icon: '⚙️',
+      title: t.services.items.development.title,
+      description: t.services.items.development.description,
+    },
+    {
+      icon: '🎨',
+      title: t.services.items.customization.title,
+      description: t.services.items.customization.description,
+    },
+    {
+      icon: '🔗',
+      title: t.services.items.integration.title,
+      description: t.services.items.integration.description,
+    },
+    {
+      icon: '🚀',
+      title: t.services.items.implementation.title,
+      description: t.services.items.implementation.description,
+    },
+  ];
+
   return (
     <section className="py-20" style={{ backgroundColor: 'var(--bg-page)' }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="section-title">Our Services</h2>
+          <h2 className="section-title">{t.services.title}</h2>
           <p className="section-subtitle mx-auto">
-            Comprehensive Odoo services to help your business grow and operate efficiently.
+            {t.services.subtitle}
           </p>
         </div>
 

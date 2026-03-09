@@ -1,12 +1,11 @@
-import type { Metadata } from 'next';
-import ForumDiscussClient from '@/components/discuss/ForumDiscussClient';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Community Forum',
-  description: 'Ask questions, share ideas, and discuss Lema Core Odoo modules. No account required.',
-};
+import ForumDiscussClient from '@/components/discuss/ForumDiscussClient';
+import { useLang } from '@/components/layout/LangProvider';
 
 export default function ForumPage() {
+  const { t } = useLang();
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -15,9 +14,9 @@ export default function ForumPage() {
         style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)' }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white">
-          <h1 className="text-4xl font-bold sm:text-5xl">Community Forum</h1>
+          <h1 className="text-4xl font-bold sm:text-5xl">{t.forum.title}</h1>
           <p className="mt-4 text-lg max-w-xl mx-auto">
-            Ask questions, share ideas, and discuss Lema Core Odoo modules.
+            {t.forum.subtitle}
           </p>
         </div>
       </section>

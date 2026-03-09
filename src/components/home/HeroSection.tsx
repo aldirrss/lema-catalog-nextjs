@@ -108,7 +108,7 @@ export default function HeroSection() {
           border: '1px solid rgba(255,255,255,0.2)',
         }}>
           <span style={{ height: '0.5rem', width: '0.5rem', borderRadius: '9999px', backgroundColor: '#4ade80' }} />
-          Trust your business system to us ❤️
+          {t.hero.trustBadge}
         </div>
 
         <h1 style={{
@@ -126,13 +126,13 @@ export default function HeroSection() {
         <p style={{ marginTop: '1rem', fontSize: '1.35rem', fontWeight: 800, color: 'var(--brand-accent)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
           {t.hero.subtitle}
         </p>
-        <p style={{ marginTop: '1.5rem', fontSize: '1.125rem', color: 'var(--text-inverse)', lineHeight: 1.8, textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+        <p style={{ marginTop: '1.5rem', fontSize: '1.125rem', color: 'white', lineHeight: 1.8, textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
           {t.hero.cta}
         </p>
 
         <div style={{ marginTop: '2.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-          <Link href="/catalog" className="hero-btn-primary">Browse Catalog →</Link>
-          <Link href="/contact" className="hero-btn-secondary">Talk to an Expert</Link>
+          <Link href="/catalog" className="hero-btn-primary">{t.hero.buttonBrowse} →</Link>
+          <Link href="/contact" className="hero-btn-secondary">{t.hero.buttonContact}</Link>
         </div>
 
         {/* Stats */}
@@ -141,10 +141,10 @@ export default function HeroSection() {
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem',
         }}>
           {[
-            { value: publishedModulesCount + '+', label: 'Modules Published' },
-            { value: '10+', label: 'Happy Clients' },
-            { value: '5+', label: 'Years Experience' },
-            { value: averageRating.toFixed(1) + '★', label: 'Average Rating' },
+            { value: publishedModulesCount + '+', label: t.hero.published },
+            { value: '10+', label: t.hero.clients },
+            { value: '5+', label: t.hero.experience },
+            { value: averageRating.toFixed(1) + '★', label: t.hero.avgRating },
           ].map((stat) => (
             <div key={stat.label} style={{
               textAlign: 'center',

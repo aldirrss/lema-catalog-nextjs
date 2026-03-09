@@ -3,7 +3,8 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { Category } from '@/types';
-import { ODOO_VERSIONS, SORT_OPTIONS, PRICE_OPTIONS } from '@/types';
+import { ODOO_VERSIONS } from '@/types';
+import { useLang } from '../layout/LangProvider';
 
 interface CatalogFiltersBarProps {
   categories: Category[];
@@ -37,6 +38,7 @@ export default function CatalogFiltersBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useLang();
 
   const updateFilter = useCallback(
     (key: string, value: string) => {
@@ -56,6 +58,24 @@ export default function CatalogFiltersBar({
     ? { ...inputStyle, border: '1.5px solid var(--brand-primary)', color: 'var(--brand-primary)', fontWeight: 600 }
     : inputStyle;
 
+  const SORT_OPTIONS = [
+    { value: '',              label: t.catalog.filterLabels.sortBy },
+    { value: 'newest',        label: t.catalog.sortOptions.newest },
+    { value: 'oldest',        label: t.catalog.sortOptions.oldest },
+    { value: 'name_asc',      label: t.catalog.sortOptions.nameAsc },
+    { value: 'name_desc',     label: t.catalog.sortOptions.nameDesc },
+    { value: 'price_asc',     label: t.catalog.sortOptions.priceAsc },
+    { value: 'price_desc',    label: t.catalog.sortOptions.priceDesc },
+    { value: 'rating_desc',   label: t.catalog.sortOptions.ratingDesc },
+    { value: 'top_purchase',  label: t.catalog.sortOptions.topPurchase },
+  ];
+
+  const PRICE_OPTIONS = [
+    { value: '',      label: t.catalog.priceOptions.all },
+    { value: 'free',  label: t.catalog.priceOptions.free },
+    { value: 'paid',  label: t.catalog.priceOptions.paid },
+  ];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
          className="catalog-filters-bar">
@@ -74,7 +94,7 @@ export default function CatalogFiltersBar({
         </svg>
         <input
           type="search"
-          placeholder="Search modules..."
+          placeholder={t.catalog.filterLabels.search}
           defaultValue={currentSearch}
           onChange={(e) => updateFilter('search', e.target.value)}
           style={{
@@ -96,7 +116,7 @@ export default function CatalogFiltersBar({
           onChange={(e) => updateFilter('category_id', e.target.value)}
           style={activeStyle(currentCategory)}
         >
-          <option value="">All Categories</option>
+          <option value="">{t.catalog.filterLabels.category}</option>
           {categories.map((cat) => (
             <option key={cat.id} value={String(cat.id)}>
               {cat.name} ({cat.module_count})
@@ -110,7 +130,7 @@ export default function CatalogFiltersBar({
           onChange={(e) => updateFilter('odoo_version', e.target.value)}
           style={activeStyle(currentVersion)}
         >
-          <option value="">All Versions</option>
+          <option value="">{t.catalog.filterLabels.version}</option>
           {ODOO_VERSIONS.map((v) => (
             <option key={v.value} value={v.value}>
               {v.label}

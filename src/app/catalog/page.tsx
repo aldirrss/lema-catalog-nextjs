@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import { getModules, getCategories } from '@/lib/odoo';
 import ModuleCard from '@/components/catalog/ModuleCard';
 import CatalogFiltersBar from '@/components/catalog/CatalogFiltersBar';
+import CatalogHeader from '@/components/catalog/CatalogHeader';
+import CatalogEmptyState from '@/components/catalog/CatalogEmptyState';
 import Pagination from '@/components/ui/Pagination';
 
 export const metadata: Metadata = {
@@ -47,12 +49,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       <div className="border-b" 
             style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--border-card)' }}>
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 text-white">
-          <h1 className="text-3xl font-bold">
-            Module Catalog
-          </h1>
-          <p className="mt-2">
-            {modulesData.meta.total} module{modulesData.meta.total !== 1 ? 's' : ''} available
-          </p>
+          <CatalogHeader total={modulesData.meta.total} />
 
           <div className="mt-6">
             <Suspense>
@@ -89,15 +86,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center" style={{ backgroundColor: 'var(--bg-page)' }}>
-            <div className="text-5xl">🔍</div>
-            <h3 className="mt-4 text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-              No modules found
-            </h3>
-            <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
-              Try adjusting your search or filters to find what you&apos;re looking for.
-            </p>
-          </div>
+          <CatalogEmptyState />
         )}
       </div>
     </div>

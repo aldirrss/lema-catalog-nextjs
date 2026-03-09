@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useLang } from '../layout/LangProvider';
 
 interface NavModule {
   slug: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function ModuleNavigation({ prev, next }: Props) {
+  const { t } = useLang();
   if (!prev && !next) return null;
 
   return (
@@ -24,7 +26,7 @@ export default function ModuleNavigation({ prev, next }: Props) {
             <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
           <div className="mod-nav-text">
-            <span className="mod-nav-label">Previous</span>
+            <span className="mod-nav-label">{t.module.prev}</span>
             <span className="mod-nav-name">{prev.name}</span>
           </div>
         </Link>
@@ -34,7 +36,7 @@ export default function ModuleNavigation({ prev, next }: Props) {
       {next ? (
         <Link href={`/modules/${next.slug}`} className="mod-nav-btn mod-nav-next">
           <div className="mod-nav-text mod-nav-text-right">
-            <span className="mod-nav-label">Next</span>
+            <span className="mod-nav-label">{t.module.next}</span>
             <span className="mod-nav-name">{next.name}</span>
           </div>
           <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" className="mod-nav-arrow">

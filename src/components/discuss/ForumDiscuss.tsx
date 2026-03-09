@@ -12,10 +12,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { DiscussThread, DiscussReply } from '@/types/discuss';
 import { useDiscussSession } from '@/hooks/useDiscussSession';
+import { useLang } from '../layout/LangProvider';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
-function timeAgo(dateStr: string): string {
+function timeAgo(dateStr: string, t: any): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'just now';
@@ -59,6 +60,7 @@ function IdentityBar({
   onSet: (s: { name: string; email: string }) => void;
   onClear: () => void;
 }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(session?.name ?? '');
   const [email, setEmail] = useState(session?.email ?? '');
@@ -82,7 +84,7 @@ function IdentityBar({
       >
         <Avatar name={session.name} size={7} />
         <span style={{ color: 'var(--text-secondary)' }}>
-          Posting as <strong style={{ color: 'var(--text-primary)' }}>{session.name}</strong>
+          {t.forum.identity.postingAs} <strong style={{ color: 'var(--text-primary)' }}>{session.name}</strong>
           {session.email && (
             <span className="ml-1" style={{ color: 'var(--text-muted)' }}>
               ({session.email})
@@ -94,7 +96,7 @@ function IdentityBar({
           className="ml-auto text-xs underline"
           style={{ color: 'var(--brand-accent)' }}
         >
-          Change
+          {t.forum.identity.change}
         </button>
         <button
           onClick={onClear}
@@ -113,19 +115,19 @@ function IdentityBar({
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-card)' }}
     >
       <p className="text-sm font-medium mb-3" style={{ color: 'var(--text-secondary)' }}>
-        {session ? 'Update your identity' : '👋 Who are you? (saved for this session)'}
+        {session ? t.forum.identity.updateIdentity : t.forum.identity.whoAreYou}
       </p>
       <div className="flex flex-col sm:flex-row gap-2">
         <input
           className="discuss-input flex-1"
-          placeholder="Your name *"
+          placeholder={t.forum.identity.yourName}
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && save()}
         />
         <input
           className="discuss-input flex-1"
-          placeholder="Email (optional)"
+          placeholder={t.forum.identity.emailOptional}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -136,7 +138,7 @@ function IdentityBar({
           disabled={!name.trim()}
           className="discuss-btn-primary shrink-0"
         >
-          Save
+          {t.forum.identity.save}
         </button>
         {session && (
           <button
@@ -160,6 +162,7 @@ function NewThreadForm({
   session: { name: string; email: string } | null;
   onCreated: (thread: DiscussThread) => void;
 }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -205,7 +208,7 @@ function NewThreadForm({
         disabled={!session}
         title={!session ? 'Set your name first' : ''}
       >
-        + Start a Discussion
+        + {t.forum.startDiscussion}
       </button>
     );
   }
@@ -217,14 +220,14 @@ function NewThreadForm({
     >
       <input
         className="discuss-input w-full"
-        placeholder="Title *"
+        placeholder={t.forum.newThread.title}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <textarea
         className="discuss-input w-full resize-none"
         rows={4}
-        placeholder="What's on your mind? *"
+        placeholder={t.forum.newThread.body}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
@@ -242,7 +245,7 @@ function NewThreadForm({
           className="discuss-btn-primary"
           disabled={submitting || !title.trim() || !body.trim()}
         >
-          {submitting ? 'Posting…' : 'Post Thread'}
+          {submitting ? t.forum.newThread.posting : t.forum.post}
         </button>
       </div>
     </div>
@@ -266,6 +269,7 @@ function ReplyForm({
   onCancel?: () => void;
   autoFocus?: boolean;
 }) {
+  const { t } = useLang();
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -313,7 +317,7 @@ function ReplyForm({
           ref={ref}
           rows={2}
           className="discuss-input w-full resize-none"
-          placeholder={session ? 'Write a reply…' : 'Set your name above to reply'}
+          placeholder={session ? t.forum.thread.writeReply : t.forum.thread.setIdentityToReply}
           value={body}
           disabled={!session}
           onChange={(e) => setBody(e.target.value)}
@@ -333,7 +337,7 @@ function ReplyForm({
             disabled={submitting || !body.trim() || !session}
             className="discuss-btn-primary text-xs py-1 px-3"
           >
-            {submitting ? 'Posting…' : '↵ Reply'}
+            {submitting ? t.forum.newThread.posting : `↵ ${t.forum.reply}`}
           </button>
         </div>
       </div>
@@ -352,6 +356,7 @@ function ThreadCard({
   session: { name: string; email: string } | null;
   defaultOpen?: boolean;
 }) {
+  const { t } = useLang();
   const [thread, setThread] = useState(initialThread);
   const [expanded, setExpanded] = useState(defaultOpen ?? false);
   const [replyingTo, setReplyingTo] = useState<number | 'root' | null>(null);
@@ -392,7 +397,7 @@ function ThreadCard({
                 className="text-xs px-1.5 py-0.5 rounded font-medium"
                 style={{ background: 'var(--brand-accent)', color: '#fff' }}
               >
-                📌 Pinned
+                📌 {t.forum.thread.pinned}
               </span>
             )}
             {thread.state === 'closed' && (
@@ -400,7 +405,7 @@ function ThreadCard({
                 className="text-xs px-1.5 py-0.5 rounded font-medium"
                 style={{ background: 'var(--bg-surface)', color: 'var(--text-muted)' }}
               >
-                🔒 Closed
+                🔒 {t.forum.thread.closed}
               </span>
             )}
           </div>
@@ -410,9 +415,9 @@ function ThreadCard({
           <div className="flex items-center gap-2 mt-1 text-xs flex-wrap" style={{ color: 'var(--text-muted)' }}>
             <span style={{ color: 'var(--text-secondary)' }}>{thread.author_name}</span>
             <span>·</span>
-            <span>{timeAgo(thread.created_date)}</span>
+            <span>{timeAgo(thread.created_date, t)}</span>
             <span>·</span>
-            <span>{thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</span>
+            <span>{thread.reply_count} {thread.reply_count === 1 ? t.forum.reply : t.forum.replies}</span>
           </div>
         </div>
         <span
@@ -453,7 +458,7 @@ function ThreadCard({
                             {reply.author_name}
                           </span>
                           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                            {timeAgo(reply.created_date)}
+                            {timeAgo(reply.created_date, t)}
                           </span>
                         </div>
                         <p className="text-sm whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>
@@ -469,7 +474,7 @@ function ThreadCard({
                             setReplyingTo((v) => (v === reply.id ? null : reply.id))
                           }
                         >
-                          ↩ Reply
+                          ↩ {t.forum.reply}
                         </button>
                       )}
                       {replyingTo === reply.id && (
@@ -497,7 +502,7 @@ function ThreadCard({
                                     {child.author_name}
                                   </span>
                                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                                    {timeAgo(child.created_date)}
+                                    {timeAgo(child.created_date, t)}
                                   </span>
                                 </div>
                                 <p className="text-xs whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>
@@ -532,7 +537,7 @@ function ThreadCard({
                   className="discuss-btn-ghost text-sm w-full"
                   disabled={!session}
                 >
-                  {session ? '↩ Write a reply…' : 'Set your name above to reply'}
+                  {session ? `↩ ${t.forum.thread.writeReply}` : t.forum.thread.setIdentityToReply}
                 </button>
               )}
             </div>
@@ -540,7 +545,7 @@ function ThreadCard({
 
           {thread.state === 'closed' && (
             <p className="mt-4 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-              This thread is closed.
+              {t.forum.thread.closedMessage}
             </p>
           )}
         </div>
@@ -552,6 +557,7 @@ function ThreadCard({
 // ─── Main Forum Component ──────────────────────────────────────────────────────
 
 export default function ForumDiscuss() {
+  const { t } = useLang();
   const { session, setSession, clearSession, loaded } = useDiscussSession();
   const [threads, setThreads] = useState<DiscussThread[]>([]);
   const [loading, setLoading] = useState(true);
@@ -644,7 +650,7 @@ export default function ForumDiscuss() {
         <div className="space-y-3">
           {loading && (
             <div className="text-center py-8 text-sm" style={{ color: 'var(--text-muted)' }}>
-              Loading discussions…
+              {t.common.loading}
             </div>
           )}
           {!loading && error && (
@@ -657,10 +663,10 @@ export default function ForumDiscuss() {
             >
               <div className="text-4xl mb-3">💬</div>
               <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
-                No discussions yet
+                {t.forum.noDiscussions}
               </p>
               <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-                Be the first to start a conversation!
+                {t.forum.noDiscussionsDesc}
               </p>
             </div>
           )}

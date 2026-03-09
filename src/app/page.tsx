@@ -5,6 +5,8 @@ import ModuleCard from '@/components/catalog/ModuleCard';
 import HeroSection from '@/components/home/HeroSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import CTASection from '@/components/home/CTASection';
+import HomeSectionHeader from '@/components/home/HomeSectionHeader';
+import SeeAllModulesButton from '@/components/home/SeeAllModulesButton';
 
 export const metadata: Metadata = {
   title: 'Lema Core Technologies — Odoo Development Experts',
@@ -27,16 +29,7 @@ export default async function HomePage() {
       {featuredModules.length > 0 && (
         <section className="py-20" style={{ padding: '5rem 0', backgroundColor: 'var(--bg-page)' }}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="section-title">Featured Modules</h2>
-                <p className="section-subtitle">Our most popular and highly-rated modules.</p>
-              </div>
-              <Link href="/catalog?featured=1" className="hidden text-sm font-medium hover:text-brand-700 sm:block"
-                style={{ color: 'var(--text-primary)' }}>
-                View all →
-              </Link>
-            </div>
+            <HomeSectionHeader type="featured" />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-2">
               {featuredModules.map((mod) => (
                 <ModuleCard key={mod.id} module={mod} />
@@ -50,26 +43,13 @@ export default async function HomePage() {
       {latestModules.length > 0 && (
         <section className="bg-surface py-20" style={{ padding: '5rem 0', backgroundColor: 'var(--bg-surface)' }}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="section-title">Latest Modules</h2>
-                <p className="section-subtitle">Recently published modules ready to install.</p>
-              </div>
-              <Link href="/catalog" className="hidden text-sm font-medium text-brand-600 hover:text-brand-700 sm:block"
-                style={{ color: 'var(--text-primary)' }}>
-                Browse all →
-              </Link>
-            </div>
+            <HomeSectionHeader type="latest" />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-2">
               {latestModules.map((mod) => (
                 <ModuleCard key={mod.id} module={mod} />
               ))}
             </div>
-            <div className="mt-10 text-center">
-              <Link href="/catalog" className="btn-outline" style={{ color: 'var(--text-primary)' }}>
-                See All Modules
-              </Link>
-            </div>
+            <SeeAllModulesButton />
           </div>
         </section>
       )}

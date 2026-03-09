@@ -2,19 +2,21 @@
 
 import { useActionState } from 'react';
 import { submitContact, type ContactFormState } from './actions';
+import { useLang } from '../layout/LangProvider';
 
 const initialState: ContactFormState = { success: false, message: '' };
 
 export default function ContactForm() {
   const [state, action, pending] = useActionState(submitContact, initialState);
+  const { t } = useLang();
 
   if (state.success) {
     return (
       <div style={{ borderRadius: '0.75rem', backgroundColor: '#f0fdf4', padding: '2rem', textAlign: 'center', border: '1px solid #bbf7d0' }}>
         <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>✅</div>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#15803d' }}>Message Sent!</h3>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: '#15803d' }}>{t.contact.successTitle}</h3>
         <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#166534' }}>{state.message}</p>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#16a34a' }}>We'll get back to you within 1 business day.</p>
+        <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#16a34a' }}>{t.contact.successMsg}</p>
       </div>
     );
   }
@@ -29,25 +31,27 @@ export default function ContactForm() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         <div>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>
-            Full Name <span style={{ color: '#ef4444' }}>*</span>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+            {t.contact.name} <span style={{ color: '#ef4444' }}>*</span>
           </label>
           <input
             name="name" type="text" required
-            placeholder="Your full name"
+            placeholder={t.contact.name}
             style={{
               width: '100%', borderRadius: '0.5rem',
               border: `1px solid ${state.errors?.name ? '#f87171' : '#d1d5db'}`,
               padding: '0.625rem 0.875rem', fontSize: '0.875rem',
               outline: 'none', boxSizing: 'border-box',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
             }}
           />
           {state.errors?.name && <p style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#dc2626' }}>{state.errors.name}</p>}
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>
-            Email <span style={{ color: '#ef4444' }}>*</span>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+            {t.contact.emailLabel} <span style={{ color: '#ef4444' }}>*</span>
           </label>
           <input
             name="email" type="email" required
@@ -57,6 +61,8 @@ export default function ContactForm() {
               border: `1px solid ${state.errors?.email ? '#f87171' : '#d1d5db'}`,
               padding: '0.625rem 0.875rem', fontSize: '0.875rem',
               outline: 'none', boxSizing: 'border-box',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
             }}
           />
           {state.errors?.email && <p style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#dc2626' }}>{state.errors.email}</p>}
@@ -64,8 +70,8 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>
-          Company <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#9ca3af' }}>(optional)</span>
+        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+          {t.contact.company}
         </label>
         <input
           name="company" type="text"
@@ -74,22 +80,26 @@ export default function ContactForm() {
             width: '100%', borderRadius: '0.5rem', border: '1px solid #d1d5db',
             padding: '0.625rem 0.875rem', fontSize: '0.875rem',
             outline: 'none', boxSizing: 'border-box',
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
           }}
         />
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>
-          Message <span style={{ color: '#ef4444' }}>*</span>
+        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+          {t.contact.message} <span style={{ color: '#ef4444' }}>*</span>
         </label>
         <textarea
           name="message" required rows={5}
-          placeholder="Tell us about your project or question..."
+          placeholder={t.contact.message}
           style={{
             width: '100%', borderRadius: '0.5rem',
             border: `1px solid ${state.errors?.message ? '#f87171' : '#d1d5db'}`,
             padding: '0.625rem 0.875rem', fontSize: '0.875rem',
             outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
           }}
         />
         {state.errors?.message && <p style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#dc2626' }}>{state.errors.message}</p>}
@@ -107,7 +117,7 @@ export default function ContactForm() {
           transition: 'background-color 0.15s',
         }}
       >
-        {pending ? 'Sending…' : 'Send Message'}
+        {pending ? t.contact.sending : t.contact.send}
       </button>
     </form>
   );

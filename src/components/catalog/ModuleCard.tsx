@@ -6,6 +6,7 @@ import type { Module } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import BadgeRow from './BadgeRow';
 import { useState } from 'react';
+import { useLang } from '../layout/LangProvider';
 
 export default function ModuleCard({ module }: { module: Module }) {
   const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:8069';
@@ -24,6 +25,8 @@ export default function ModuleCard({ module }: { module: Module }) {
   const displayCount = isFree ? downloadCount : (module.count_purchase ?? 0);
   const countLabel = isFree ? 'Downloads' : 'Purchases';
   const countIcon = isFree ? '⬇️' : '🛒';
+
+  const { t } = useLang();
 
   return (
     <Link href={`/modules/${module.slug}`} style={{ display: 'block', textDecoration: 'none' }}>
@@ -83,7 +86,7 @@ export default function ModuleCard({ module }: { module: Module }) {
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
               zIndex: 1,
             }}>
-              Featured
+              {t.common.featured}
             </span>
           )}
         </div>
