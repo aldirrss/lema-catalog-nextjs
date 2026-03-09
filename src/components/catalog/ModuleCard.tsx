@@ -8,7 +8,7 @@ import BadgeRow from './BadgeRow';
 import { useState } from 'react';
 
 export default function ModuleCard({ module }: { module: Module }) {
-  const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:6018';
+  const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:8069';
   const imageUrl = module.cover_image_url
     ? (module.cover_image_url.startsWith('http') ? module.cover_image_url : `${odooUrl}${module.cover_image_url}`)
     : null;

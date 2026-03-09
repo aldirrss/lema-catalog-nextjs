@@ -17,7 +17,7 @@ export default function ForumPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-white">
           <h1 className="text-4xl font-bold sm:text-5xl">Community Forum</h1>
           <p className="mt-4 text-lg max-w-xl mx-auto">
-            Ask questions, share ideas, and discuss our Odoo modules. No account required.
+            Ask questions, share ideas, and discuss Lema Core Odoo modules.
           </p>
         </div>
       </section>

@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { DiscussThread, DiscussReply, DiscussModule } from '@/types/discuss';
+import type { DiscussThread, DiscussReply } from '@/types/discuss';
 import { useDiscussSession } from '@/hooks/useDiscussSession';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -151,137 +151,6 @@ function IdentityBar({
   );
 }
 
-// ─── Module Tag Selector ──────────────────────────────────────────────────────
-
-function ModuleTagSelector({
-  selected,
-  onChange,
-}: {
-  selected: DiscussModule[];
-  onChange: (modules: DiscussModule[]) => void;
-}) {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<DiscussModule[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const doSearch = useCallback(async (q: string) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/discuss/modules-search?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      if (data.success) setResults(data.data);
-    } catch {
-      /* ignore */
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const search = useCallback((q: string) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => doSearch(q), 250);
-  }, [doSearch]);
-
-  // Trigger search whenever dropdown opens or query changes
-  useEffect(() => {
-    if (open) search(query);
-  }, [query, open, search]);
-
-  // Close on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const add = (m: DiscussModule) => {
-    if (!selected.find((s) => s.id === m.id)) onChange([...selected, m]);
-    setQuery('');
-    setOpen(false);
-  };
-
-  const remove = (id: number) => onChange(selected.filter((s) => s.id !== id));
-
-  return (
-    <div ref={ref} className="relative">
-      <div
-        className="discuss-input flex flex-wrap gap-1.5 min-h-[38px] cursor-text"
-        onClick={() => setOpen(true)}
-      >
-        {selected.map((m) => (
-          <span
-            key={m.id}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-            style={{ background: 'var(--bg-inline-card)', color: 'var(--brand-accent)', border: '1px solid var(--border-card)' }}
-          >
-            <span className="opacity-60">#</span>{m.name}
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); remove(m.id); }}
-              className="ml-0.5 opacity-50 hover:opacity-100"
-            >
-              ×
-            </button>
-          </span>
-        ))}
-        <input
-          className="flex-1 min-w-[120px] bg-transparent outline-none text-sm"
-          style={{ color: 'var(--text-primary)' }}
-          placeholder={selected.length === 0 ? 'Tag modules (optional)...' : ''}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setOpen(true)}
-        />
-      </div>
-
-      {open && (
-        <div
-          className="absolute z-50 top-full left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-xl"
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)' }}
-        >
-          {loading && (
-            <div className="px-3 py-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-              Searching…
-            </div>
-          )}
-          {!loading && results.length === 0 && (
-            <div className="px-3 py-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-              {query ? 'No modules found' : 'Type to search modules…'}
-            </div>
-          )}
-          {results.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => add(m)}
-              className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors"
-              style={{ color: 'var(--text-primary)' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '')}
-            >
-              <span
-                className="text-xs px-1.5 py-0.5 rounded font-mono"
-                style={{ background: 'var(--bg-inline-card)', color: 'var(--text-muted)' }}
-              >
-                {m.technical_name}
-              </span>
-              <span>{m.name}</span>
-              {selected.find((s) => s.id === m.id) && (
-                <span className="ml-auto text-xs" style={{ color: 'var(--brand-accent)' }}>✓</span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── New Thread Form ───────────────────────────────────────────────────────────
 
 function NewThreadForm({
@@ -294,7 +163,6 @@ function NewThreadForm({
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [taggedModules, setTaggedModules] = useState<DiscussModule[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -311,7 +179,6 @@ function NewThreadForm({
           body: body.trim(),
           author_name: session.name,
           author_email: session.email,
-          module_ids: taggedModules.map((m) => m.id),
         }),
       });
       const data = await res.json();
@@ -319,7 +186,6 @@ function NewThreadForm({
         onCreated(data.data);
         setTitle('');
         setBody('');
-        setTaggedModules([]);
         setOpen(false);
       } else {
         setError(data.error ?? 'Failed to post thread.');
@@ -355,7 +221,6 @@ function NewThreadForm({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      <ModuleTagSelector selected={taggedModules} onChange={setTaggedModules} />
       <textarea
         className="discuss-input w-full resize-none"
         rows={4}
@@ -549,19 +414,6 @@ function ThreadCard({
             <span>·</span>
             <span>{thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</span>
           </div>
-          {thread.tagged_modules.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {thread.tagged_modules.map((m) => (
-                <span
-                  key={m.id}
-                  className="text-xs px-2 py-0.5 rounded-full font-medium"
-                  style={{ background: 'var(--bg-inline-card)', color: 'var(--brand-accent)' }}
-                >
-                  #{m.name}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
         <span
           className="text-sm shrink-0 mt-1 transition-transform"
@@ -704,14 +556,12 @@ export default function ForumDiscuss() {
   const [threads, setThreads] = useState<DiscussThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filterSlug, setFilterSlug] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const qs = filterSlug ? `?module_slug=${encodeURIComponent(filterSlug)}` : '';
-      const res = await fetch(`/api/discuss/threads${qs}`);
+      const res = await fetch('/api/discuss/threads');
       const data = await res.json();
       if (data.success) setThreads(data.data);
       else setError('Failed to load threads.');
@@ -720,7 +570,7 @@ export default function ForumDiscuss() {
     } finally {
       setLoading(false);
     }
-  }, [filterSlug]);
+  }, []);
 
   useEffect(() => {
     load();

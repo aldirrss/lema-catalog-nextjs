@@ -27,7 +27,6 @@ export interface DiscussThread {
   pinned: boolean;
   reply_count: number;
   created_date: string;
-  tagged_modules: DiscussModule[];
   replies: DiscussReply[];
 }
 
