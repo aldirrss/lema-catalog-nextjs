@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { LANGUAGES, LangCode, LangDef, TranslationKeys, translations } from '@/lib/translations';
+import { LANGUAGES, LangCode, LangDef, TranslationKeys, translations } from '@/lib/i18n/translations';
 
 type LangContextType = {
   lang: LangCode;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { LANGUAGES } from '@/lib/translations';
+import { LANGUAGES } from '@/lib/i18n/translations';
 import { useLang } from './LangProvider';
 
 export default function LangSwitcher() {

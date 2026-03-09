@@ -123,22 +123,23 @@ export default function HeroSection() {
             </span>
           ))}
         </h1>
-        <p style={{ marginTop: '1rem', fontSize: '1.35rem', fontWeight: 800, color: 'var(--brand-accent)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+        <p style={{ marginTop: '0.75rem', fontSize: '1.35rem', fontWeight: 800, color: 'var(--brand-accent)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
           {t.hero.subtitle}
         </p>
-        <p style={{ marginTop: '1.5rem', fontSize: '1.125rem', color: 'white', lineHeight: 1.8, textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
+        <p style={{ marginTop: '1.15rem', fontSize: '1.125rem', color: 'white', lineHeight: 1.8, textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>
           {t.hero.cta}
         </p>
 
-        <div style={{ marginTop: '2.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+        <div style={{ marginTop: '2.15rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
           <Link href="/catalog" className="hero-btn-primary">{t.hero.buttonBrowse} →</Link>
           <Link href="/contact" className="hero-btn-secondary">{t.hero.buttonContact}</Link>
         </div>
 
         {/* Stats */}
         <div style={{
-          marginTop: '4rem',
+          marginTop: '2.15rem',
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem',
+          
         }}>
           {[
             { value: publishedModulesCount + '+', label: t.hero.published },
@@ -153,7 +154,7 @@ export default function HeroSection() {
               border: '1px solid rgba(255,255,255,0.15)',
               backdropFilter: 'blur(6px)',
             }}>
-              <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
                 {stat.value}
               </div>
               <div style={{ marginTop: '0.25rem', fontSize: '0.8125rem', color: '#93c5fd' }}>{stat.label}</div>
