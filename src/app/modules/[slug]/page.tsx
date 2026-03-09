@@ -74,7 +74,7 @@ export default async function ModuleDetailPage({ params }: PageProps) {
             <span>/</span>
             <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{mod.name}</span>
           </nav>
-          <Link href="/catalog" className="btn-back">
+          <Link href="/catalog" className="btn-back btn-back-desktop">
             ← Back to Catalog
           </Link>
         </div>
@@ -137,6 +137,14 @@ export default async function ModuleDetailPage({ params }: PageProps) {
           border-color: var(--brand-primary);
           color: var(--brand-primary);
           background: var(--bg-surface);
+        }
+        .btn-back-desktop {
+          display: none;
+        }
+        @media (min-width: 640px) {
+          .btn-back-desktop {
+            display: inline-flex;
+          }
         }
       `}</style>
     </div>
