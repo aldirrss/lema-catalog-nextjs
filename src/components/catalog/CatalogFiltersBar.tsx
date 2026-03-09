@@ -10,6 +10,8 @@ interface CatalogFiltersBarProps {
   currentSearch: string;
   currentCategory: string;
   currentVersion: string;
+  currentPrice: string;
+  currentSort: string;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -24,11 +26,30 @@ const inputStyle: React.CSSProperties = {
   cursor: 'pointer',
 };
 
+const SORT_OPTIONS = [
+  { value: '',             label: 'Sort By' },
+  { value: 'newest',       label: 'Newest' },
+  { value: 'oldest',       label: 'Oldest' },
+  { value: 'name_asc',     label: 'Name A → Z' },
+  { value: 'name_desc',    label: 'Name Z → A' },
+  { value: 'price_asc',    label: 'Price: Low to High' },
+  { value: 'price_desc',   label: 'Price: High to Low' },
+  { value: 'rating_desc',  label: 'Top Rated' },
+];
+
+const PRICE_OPTIONS = [
+  { value: '',      label: 'All Prices' },
+  { value: 'free',  label: 'Free' },
+  { value: 'paid',  label: 'Paid' },
+];
+
 export default function CatalogFiltersBar({
   categories,
   currentSearch,
   currentCategory,
   currentVersion,
+  currentPrice,
+  currentSort,
 }: CatalogFiltersBarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -48,9 +69,14 @@ export default function CatalogFiltersBar({
     [router, pathname, searchParams],
   );
 
+  const activeStyle = (value: string): React.CSSProperties => value
+    ? { ...inputStyle, border: '1.5px solid var(--brand-primary)', color: 'var(--brand-primary)', fontWeight: 600 }
+    : inputStyle;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
          className="catalog-filters-bar">
+
       {/* Search */}
       <div style={{ position: 'relative', flex: 1 }}>
         <svg
@@ -78,12 +104,14 @@ export default function CatalogFiltersBar({
         />
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        {/* Category filter */}
+      {/* Filter row */}
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+
+        {/* Category */}
         <select
           value={currentCategory}
           onChange={(e) => updateFilter('category_id', e.target.value)}
-          style={inputStyle}
+          style={activeStyle(currentCategory)}
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -93,21 +121,45 @@ export default function CatalogFiltersBar({
           ))}
         </select>
 
-        {/* Odoo version filter */}
+        {/* Odoo version */}
         <select
           value={currentVersion}
           onChange={(e) => updateFilter('odoo_version', e.target.value)}
-          style={{
-            ...inputStyle,
-            borderColor: currentVersion ? 'var(--brand-primary)' : 'var(--border-card)',
-            color: currentVersion ? 'var(--brand-primary)' : 'var(--text-primary)',
-            fontWeight: currentVersion ? 600 : 400,
-          }}
+          style={activeStyle(currentVersion)}
         >
           <option value="">All Versions</option>
           {ODOO_VERSIONS.map((v) => (
             <option key={v.value} value={v.value}>
               {v.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Price filter */}
+        <select
+          value={currentPrice}
+          onChange={(e) => updateFilter('price', e.target.value)}
+          style={activeStyle(currentPrice)}
+        >
+          {PRICE_OPTIONS.map((p) => (
+            <option key={p.value} value={p.value}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '1.5rem', background: 'var(--border-card)', flexShrink: 0 }} />
+
+        {/* Sort by */}
+        <select
+          value={currentSort}
+          onChange={(e) => updateFilter('sort_by', e.target.value)}
+          style={activeStyle(currentSort)}
+        >
+          {SORT_OPTIONS.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
             </option>
           ))}
         </select>

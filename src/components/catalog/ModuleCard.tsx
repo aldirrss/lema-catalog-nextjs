@@ -2,21 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Module } from '@/types';
 import { formatPrice } from '@/lib/utils';
-
-const VERSION_COLORS: Record<string, string> = {
-  '19': '#6d28d9',
-  '18': '#0891b2',
-  '17': '#059669',
-  '16': '#d97706',
-  '15': '#b91c1c',
-  '14': '#0f766e',
-  '13': '#1e40af',
-  '12': '#047857',
-  '11': '#c2410c',
-  '10': '#7c3aed',
-  '9':  '#dc2626',
-  '8':  '#ea580c',
-};
+import BadgeRow from './BadgeRow';
 
 export default function ModuleCard({ module }: { module: Module }) {
   const odooUrl = process.env.NEXT_PUBLIC_ODOO_BASE_URL ?? 'http://localhost:2018';
@@ -89,30 +75,11 @@ export default function ModuleCard({ module }: { module: Module }) {
 
         {/* Content */}
         <div style={{ padding: '1.125rem' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem', marginBottom: '0.5rem' }}>
-            {module.category && (
-              <span className="badge badge-blue">{module.category.name}</span>
-            )}
-            {module.versions && module.versions.length > 0 ? (
-              module.versions.map((v) => (
-                <span
-                  key={v.id}
-                  className="badge"
-                  style={{
-                    backgroundColor: `${VERSION_COLORS[v.odoo_version] ?? '#64748b'}18`,
-                    color: VERSION_COLORS[v.odoo_version] ?? 'var(--text-secondary)',
-                    border: `1px solid ${VERSION_COLORS[v.odoo_version] ?? '#64748b'}40`,
-                    fontWeight: 600,
-                  }}
-                >
-                  Odoo {v.odoo_version}
-                </span>
-              ))
-            ) : (
-              <span className="badge" style={{ backgroundColor: 'var(--bg-surface-2)', color: 'var(--text-secondary)' }}>
-                —
-              </span>
-            )}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <BadgeRow
+              category={module.category}
+              versions={module.versions ?? []}
+            />
           </div>
 
           <h3 style={{

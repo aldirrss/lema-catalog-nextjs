@@ -69,19 +69,18 @@ export async function getModules(
   filters: Partial<CatalogFilters> = {},
 ): Promise<ApiListResponse<Module>> {
   const query = buildQuery({
-    page: filters.page,
-    search: filters.search,
-    category_id: filters.category_id,
+    page:         filters.page,
+    search:       filters.search,
+    category_id:  filters.category_id,
     odoo_version: filters.odoo_version,
+    price:        filters.price,
+    sort_by:      filters.sort_by,
     limit: 12,
   });
 
-  return odooFetch(`/api/modules${query}`, {
-    next: {
-      revalidate: REVALIDATE_SECONDS,
-      tags: ['modules'], // di-revalidate saat POST /api/revalidate dipanggil
-    },
-  });
+  // Selalu no-store — catalog page pakai force-dynamic,
+  // jadi tidak perlu ISR. Data selalu fresh dari Odoo.
+  return odooFetch(`/api/modules${query}`, { cache: 'no-store' });
 }
 
 /** Fetch featured modules untuk homepage. */

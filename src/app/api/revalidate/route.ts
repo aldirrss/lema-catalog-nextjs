@@ -25,7 +25,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type RevalidateBody = {
   type?: 'module' | 'catalog' | 'feedback' | 'all';
-  slug?: string; // URL slug modul, dipakai saat type = "module" | "feedback"
+  slug?: string;
 };
 
 type RevalidateResult = {

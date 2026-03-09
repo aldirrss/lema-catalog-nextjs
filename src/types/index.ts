@@ -22,21 +22,21 @@ export interface Screenshot {
   caption?: string;
 }
 
-export type OdooVersion = '8' | '9' | '10' | '11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '19';
+export type OdooVersion = '19' | '18' | '17' | '16' | '15' | '14' | '13' | '12' | '11' | '10' | '9' | '8';
 
 export const ODOO_VERSIONS: { value: OdooVersion; label: string }[] = [
-  { value: '8', label: 'Odoo 8' },
-  { value: '9', label: 'Odoo 9' },
-  { value: '10', label: 'Odoo 10' },
-  { value: '11', label: 'Odoo 11' },
-  { value: '12', label: 'Odoo 12' },
-  { value: '13', label: 'Odoo 13' },
-  { value: '14', label: 'Odoo 14' },
-  { value: '15', label: 'Odoo 15' },
-  { value: '16', label: 'Odoo 16' },
-  { value: '17', label: 'Odoo 17' },
-  { value: '18', label: 'Odoo 18' },
   { value: '19', label: 'Odoo 19' },
+  { value: '18', label: 'Odoo 18' },
+  { value: '17', label: 'Odoo 17' },
+  { value: '16', label: 'Odoo 16' },
+  { value: '15', label: 'Odoo 15' },
+  { value: '14', label: 'Odoo 14' },
+  { value: '13', label: 'Odoo 13' },
+  { value: '12', label: 'Odoo 12' },
+  { value: '11', label: 'Odoo 11' },
+  { value: '10', label: 'Odoo 10' },
+  { value: '9', label: 'Odoo 9' },
+  { value: '8', label: 'Odoo 8' },
 ];
 
 export interface ModuleVersion {
@@ -135,5 +135,7 @@ export interface CatalogFilters {
   search: string;
   category_id: string;
   odoo_version: string;
+  price: string;
+  sort_by: string;
   page: number;
 }
