@@ -45,8 +45,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     <div className="min-h-screen">
       {/* Header */}
       <div className="border-b" 
-            style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--border-card)', color: 'var(--text-inverse)' }}>
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            style={{ backgroundColor: 'var(--brand-primary)', borderColor: 'var(--border-card)' }}>
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 text-white">
           <h1 className="text-3xl font-bold">
             Module Catalog
           </h1>

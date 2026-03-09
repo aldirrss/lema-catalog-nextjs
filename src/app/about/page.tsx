@@ -26,7 +26,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="py-20 text-white" style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)', color: 'var(--text-inverse)' }}>
+      <section className="py-20 text-white" style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)' }}>
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold sm:text-5xl">About Lema Core Technologies</h1>
           <p className="mt-4 text-xl text-blue-100 max-w-2xl mx-auto">

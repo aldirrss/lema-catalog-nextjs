@@ -17,6 +17,7 @@ export default function Navbar() {
     { href: '/', label: t.nav.home },
     { href: '/catalog', label: t.nav.catalog },
     { href: '/about', label: t.nav.about },
+    { href: '/forum', label: t.nav.forum },
     { href: '/contact', label: t.nav.contact },
   ];
 

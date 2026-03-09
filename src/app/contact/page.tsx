@@ -1,5 +1,6 @@
+import ContactForm from '@/components/contact/ContactForm';
 import type { Metadata } from 'next';
-import ContactForm from './ContactForm';
+
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -10,7 +11,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="py-16 text-white" style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)', color: 'var(--text-inverse)' }}>
+      <div className="py-16 text-white" style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)' }}>
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold sm:text-5xl">Contact Us</h1>
           <p className="mt-3 text-lg">

@@ -13,6 +13,8 @@ export default function ModuleCard({ module }: { module: Module }) {
     ? (module.cover_image_url.startsWith('http') ? module.cover_image_url : `${odooUrl}${module.cover_image_url}`)
     : null;
 
+  console.log('Module image', module.name, imageUrl);
+
   const selectedVersion = module.versions ? module.versions[0] : null;
   const [downloadCount] = useState(module.count_download ?? 0);
   

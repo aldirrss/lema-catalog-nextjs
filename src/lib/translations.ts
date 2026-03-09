@@ -26,6 +26,7 @@ export type TranslationKeys = {
     home: string;
     catalog: string;
     about: string;
+    forum: string;
     contact: string;
     getInTouch: string;
   };
@@ -130,6 +131,7 @@ export const translations: Record<LangCode, TranslationKeys> = {
       home: 'Home',
       catalog: 'Catalog',
       about: 'About',
+      forum: 'Forum',
       contact: 'Contact',
       getInTouch: 'Get in Touch',
     },
@@ -226,6 +228,7 @@ export const translations: Record<LangCode, TranslationKeys> = {
       home: 'Beranda',
       catalog: 'Katalog',
       about: 'Tentang',
+      forum: 'Forum',
       contact: 'Kontak',
       getInTouch: 'Hubungi Kami',
     },
@@ -322,6 +325,7 @@ export const translations: Record<LangCode, TranslationKeys> = {
       home: 'الرئيسية',
       catalog: 'الكتالوج',
       about: 'عن الشركة',
+      forum: 'المنتدى',
       contact: 'تواصل',
       getInTouch: 'تواصل معنا',
     },

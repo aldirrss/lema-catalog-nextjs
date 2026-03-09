@@ -1,0 +1,828 @@
+'use client';
+/**
+ * ForumDiscuss
+ * ------------
+ * Full forum discussion component.
+ * - List threads with module tags
+ * - Create new thread with module tag autocomplete
+ * - Reply to threads (nested one level)
+ * - Visitor identity stored in sessionStorage (no login)
+ */
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import type { DiscussThread, DiscussReply, DiscussModule } from '@/types/discuss';
+import { useDiscussSession } from '@/hooks/useDiscussSession';
+
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function Avatar({ name, size = 8 }: { name: string; size?: number }) {
+  const initials = name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+  const colors = [
+    'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500',
+    'bg-pink-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500',
+  ];
+  const color = colors[name.charCodeAt(0) % colors.length];
+  return (
+    <div
+      className={`${color} rounded-full flex items-center justify-center text-white font-semibold shrink-0`}
+      style={{ width: `${size * 4}px`, height: `${size * 4}px`, fontSize: `${size * 1.5}px` }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+// ─── Identity / Session Form ───────────────────────────────────────────────
+
+function IdentityBar({
+  session,
+  onSet,
+  onClear,
+}: {
+  session: { name: string; email: string } | null;
+  onSet: (s: { name: string; email: string }) => void;
+  onClear: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(session?.name ?? '');
+  const [email, setEmail] = useState(session?.email ?? '');
+
+  useEffect(() => {
+    setName(session?.name ?? '');
+    setEmail(session?.email ?? '');
+  }, [session]);
+
+  const save = () => {
+    if (!name.trim()) return;
+    onSet({ name: name.trim(), email: email.trim() });
+    setEditing(false);
+  };
+
+  if (session && !editing) {
+    return (
+      <div
+        className="flex items-center gap-3 px-4 py-2 rounded-xl text-sm mb-4"
+        style={{ background: 'var(--bg-inline-card)', border: '1px solid var(--border-card)' }}
+      >
+        <Avatar name={session.name} size={7} />
+        <span style={{ color: 'var(--text-secondary)' }}>
+          Posting as <strong style={{ color: 'var(--text-primary)' }}>{session.name}</strong>
+          {session.email && (
+            <span className="ml-1" style={{ color: 'var(--text-muted)' }}>
+              ({session.email})
+            </span>
+          )}
+        </span>
+        <button
+          onClick={() => setEditing(true)}
+          className="ml-auto text-xs underline"
+          style={{ color: 'var(--brand-accent)' }}
+        >
+          Change
+        </button>
+        <button
+          onClick={onClear}
+          className="text-xs"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="rounded-xl p-4 mb-4"
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-card)' }}
+    >
+      <p className="text-sm font-medium mb-3" style={{ color: 'var(--text-secondary)' }}>
+        {session ? 'Update your identity' : '👋 Who are you? (saved for this session)'}
+      </p>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          className="discuss-input flex-1"
+          placeholder="Your name *"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && save()}
+        />
+        <input
+          className="discuss-input flex-1"
+          placeholder="Email (optional)"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && save()}
+        />
+        <button
+          onClick={save}
+          disabled={!name.trim()}
+          className="discuss-btn-primary shrink-0"
+        >
+          Save
+        </button>
+        {session && (
+          <button
+            onClick={() => setEditing(false)}
+            className="discuss-btn-ghost shrink-0"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Module Tag Selector ──────────────────────────────────────────────────────
+
+function ModuleTagSelector({
+  selected,
+  onChange,
+}: {
+  selected: DiscussModule[];
+  onChange: (modules: DiscussModule[]) => void;
+}) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<DiscussModule[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const doSearch = useCallback(async (q: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/discuss/modules-search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if (data.success) setResults(data.data);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const search = useCallback((q: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => doSearch(q), 250);
+  }, [doSearch]);
+
+  // Trigger search whenever dropdown opens or query changes
+  useEffect(() => {
+    if (open) search(query);
+  }, [query, open, search]);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const add = (m: DiscussModule) => {
+    if (!selected.find((s) => s.id === m.id)) onChange([...selected, m]);
+    setQuery('');
+    setOpen(false);
+  };
+
+  const remove = (id: number) => onChange(selected.filter((s) => s.id !== id));
+
+  return (
+    <div ref={ref} className="relative">
+      <div
+        className="discuss-input flex flex-wrap gap-1.5 min-h-[38px] cursor-text"
+        onClick={() => setOpen(true)}
+      >
+        {selected.map((m) => (
+          <span
+            key={m.id}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+            style={{ background: 'var(--bg-inline-card)', color: 'var(--brand-accent)', border: '1px solid var(--border-card)' }}
+          >
+            <span className="opacity-60">#</span>{m.name}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); remove(m.id); }}
+              className="ml-0.5 opacity-50 hover:opacity-100"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+        <input
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-sm"
+          style={{ color: 'var(--text-primary)' }}
+          placeholder={selected.length === 0 ? 'Tag modules (optional)...' : ''}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setOpen(true)}
+        />
+      </div>
+
+      {open && (
+        <div
+          className="absolute z-50 top-full left-0 right-0 mt-1 rounded-xl overflow-hidden shadow-xl"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)' }}
+        >
+          {loading && (
+            <div className="px-3 py-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+              Searching…
+            </div>
+          )}
+          {!loading && results.length === 0 && (
+            <div className="px-3 py-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+              {query ? 'No modules found' : 'Type to search modules…'}
+            </div>
+          )}
+          {results.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => add(m)}
+              className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors"
+              style={{ color: 'var(--text-primary)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+            >
+              <span
+                className="text-xs px-1.5 py-0.5 rounded font-mono"
+                style={{ background: 'var(--bg-inline-card)', color: 'var(--text-muted)' }}
+              >
+                {m.technical_name}
+              </span>
+              <span>{m.name}</span>
+              {selected.find((s) => s.id === m.id) && (
+                <span className="ml-auto text-xs" style={{ color: 'var(--brand-accent)' }}>✓</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── New Thread Form ───────────────────────────────────────────────────────────
+
+function NewThreadForm({
+  session,
+  onCreated,
+}: {
+  session: { name: string; email: string } | null;
+  onCreated: (thread: DiscussThread) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [taggedModules, setTaggedModules] = useState<DiscussModule[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    if (!title.trim() || !body.trim() || !session) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/discuss/threads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          body: body.trim(),
+          author_name: session.name,
+          author_email: session.email,
+          module_ids: taggedModules.map((m) => m.id),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onCreated(data.data);
+        setTitle('');
+        setBody('');
+        setTaggedModules([]);
+        setOpen(false);
+      } else {
+        setError(data.error ?? 'Failed to post thread.');
+      }
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="discuss-btn-primary w-full"
+        disabled={!session}
+        title={!session ? 'Set your name first' : ''}
+      >
+        + Start a Discussion
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className="rounded-2xl p-5 space-y-3"
+      style={{ background: 'var(--bg-card)', border: '1px solid var(--border-card)', boxShadow: 'var(--shadow-card)' }}
+    >
+      <input
+        className="discuss-input w-full"
+        placeholder="Title *"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <ModuleTagSelector selected={taggedModules} onChange={setTaggedModules} />
+      <textarea
+        className="discuss-input w-full resize-none"
+        rows={4}
+        placeholder="What's on your mind? *"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+      />
+      {error && <p className="text-sm text-red-500">{error}</p>}
+      <div className="flex gap-2 justify-end">
+        <button
+          onClick={() => setOpen(false)}
+          className="discuss-btn-ghost"
+          disabled={submitting}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={submit}
+          className="discuss-btn-primary"
+          disabled={submitting || !title.trim() || !body.trim()}
+        >
+          {submitting ? 'Posting…' : 'Post Thread'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Reply Form ────────────────────────────────────────────────────────────────
+
+function ReplyForm({
+  threadId,
+  parentReplyId,
+  session,
+  onPosted,
+  onCancel,
+  autoFocus,
+}: {
+  threadId: number;
+  parentReplyId?: number;
+  session: { name: string; email: string } | null;
+  onPosted: (reply: DiscussReply) => void;
+  onCancel?: () => void;
+  autoFocus?: boolean;
+}) {
+  const [body, setBody] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (autoFocus) ref.current?.focus();
+  }, [autoFocus]);
+
+  const submit = async () => {
+    if (!body.trim() || !session) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/discuss/threads/${threadId}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          body: body.trim(),
+          author_name: session.name,
+          author_email: session.email,
+          parent_reply_id: parentReplyId ?? null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onPosted(data.data);
+        setBody('');
+        onCancel?.();
+      } else {
+        setError(data.error ?? 'Failed to post reply.');
+      }
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex gap-2 mt-2">
+      {session && <Avatar name={session.name} size={7} />}
+      <div className="flex-1 space-y-1.5">
+        <textarea
+          ref={ref}
+          rows={2}
+          className="discuss-input w-full resize-none"
+          placeholder={session ? 'Write a reply…' : 'Set your name above to reply'}
+          value={body}
+          disabled={!session}
+          onChange={(e) => setBody(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit();
+          }}
+        />
+        {error && <p className="text-xs text-red-500">{error}</p>}
+        <div className="flex gap-2 justify-end">
+          {onCancel && (
+            <button onClick={onCancel} className="discuss-btn-ghost text-xs py-1 px-2">
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={submit}
+            disabled={submitting || !body.trim() || !session}
+            className="discuss-btn-primary text-xs py-1 px-3"
+          >
+            {submitting ? 'Posting…' : '↵ Reply'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Single Thread Card ────────────────────────────────────────────────────────
+
+function ThreadCard({
+  thread: initialThread,
+  session,
+  defaultOpen,
+}: {
+  thread: DiscussThread;
+  session: { name: string; email: string } | null;
+  defaultOpen?: boolean;
+}) {
+  const [thread, setThread] = useState(initialThread);
+  const [expanded, setExpanded] = useState(defaultOpen ?? false);
+  const [replyingTo, setReplyingTo] = useState<number | 'root' | null>(null);
+
+  const addReply = (reply: DiscussReply) => {
+    setThread((t) => ({
+      ...t,
+      replies: [...t.replies, reply],
+      reply_count: t.reply_count + 1,
+    }));
+    setReplyingTo(null);
+  };
+
+  // Group replies: top-level and children
+  const topReplies = thread.replies.filter((r) => !r.parent_reply_id);
+  const childReplies = (parentId: number) =>
+    thread.replies.filter((r) => r.parent_reply_id === parentId);
+
+  return (
+    <div
+      className="rounded-2xl overflow-hidden transition-all"
+      style={{
+        background: 'var(--bg-card)',
+        border: `1px solid ${thread.pinned ? 'var(--brand-accent)' : 'var(--border-card)'}`,
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
+      {/* Header */}
+      <button
+        className="w-full text-left px-5 py-4 flex items-start gap-3"
+        onClick={() => setExpanded((v) => !v)}
+      >
+        <Avatar name={thread.author_name} size={9} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            {thread.pinned && (
+              <span
+                className="text-xs px-1.5 py-0.5 rounded font-medium"
+                style={{ background: 'var(--brand-accent)', color: '#fff' }}
+              >
+                📌 Pinned
+              </span>
+            )}
+            {thread.state === 'closed' && (
+              <span
+                className="text-xs px-1.5 py-0.5 rounded font-medium"
+                style={{ background: 'var(--bg-surface)', color: 'var(--text-muted)' }}
+              >
+                🔒 Closed
+              </span>
+            )}
+          </div>
+          <h3 className="font-semibold mt-0.5 leading-snug" style={{ color: 'var(--text-primary)' }}>
+            {thread.title}
+          </h3>
+          <div className="flex items-center gap-2 mt-1 text-xs flex-wrap" style={{ color: 'var(--text-muted)' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>{thread.author_name}</span>
+            <span>·</span>
+            <span>{timeAgo(thread.created_date)}</span>
+            <span>·</span>
+            <span>{thread.reply_count} {thread.reply_count === 1 ? 'reply' : 'replies'}</span>
+          </div>
+          {thread.tagged_modules.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {thread.tagged_modules.map((m) => (
+                <span
+                  key={m.id}
+                  className="text-xs px-2 py-0.5 rounded-full font-medium"
+                  style={{ background: 'var(--bg-inline-card)', color: 'var(--brand-accent)' }}
+                >
+                  #{m.name}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <span
+          className="text-sm shrink-0 mt-1 transition-transform"
+          style={{
+            color: 'var(--text-muted)',
+            transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        >
+          ▾
+        </span>
+      </button>
+
+      {/* Expanded body + replies */}
+      {expanded && (
+        <div className="px-5 pb-5 border-t" style={{ borderColor: 'var(--border-card)' }}>
+          <p
+            className="mt-4 text-sm leading-relaxed whitespace-pre-wrap"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {thread.body}
+          </p>
+
+          {/* Replies */}
+          {topReplies.length > 0 && (
+            <div className="mt-5 space-y-3">
+              {topReplies.map((reply) => (
+                <div key={reply.id}>
+                  <div className="flex gap-2.5">
+                    <Avatar name={reply.author_name} size={7} />
+                    <div className="flex-1">
+                      <div
+                        className="rounded-xl px-3.5 py-2.5"
+                        style={{ background: 'var(--bg-surface)' }}
+                      >
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            {reply.author_name}
+                          </span>
+                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                            {timeAgo(reply.created_date)}
+                          </span>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>
+                          {reply.body}
+                        </p>
+                      </div>
+                      {/* Reply-to-reply button */}
+                      {thread.state === 'open' && (
+                        <button
+                          className="text-xs mt-1 ml-1"
+                          style={{ color: 'var(--brand-accent)' }}
+                          onClick={() =>
+                            setReplyingTo((v) => (v === reply.id ? null : reply.id))
+                          }
+                        >
+                          ↩ Reply
+                        </button>
+                      )}
+                      {replyingTo === reply.id && (
+                        <ReplyForm
+                          threadId={thread.id}
+                          parentReplyId={reply.id}
+                          session={session}
+                          onPosted={addReply}
+                          onCancel={() => setReplyingTo(null)}
+                          autoFocus
+                        />
+                      )}
+                      {/* Nested children */}
+                      {childReplies(reply.id).length > 0 && (
+                        <div className="ml-4 mt-2 space-y-2 pl-3 border-l-2" style={{ borderColor: 'var(--border-card)' }}>
+                          {childReplies(reply.id).map((child) => (
+                            <div key={child.id} className="flex gap-2">
+                              <Avatar name={child.author_name} size={6} />
+                              <div
+                                className="flex-1 rounded-xl px-3 py-2"
+                                style={{ background: 'var(--bg-surface)' }}
+                              >
+                                <div className="flex items-baseline gap-2 mb-0.5">
+                                  <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                                    {child.author_name}
+                                  </span>
+                                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                    {timeAgo(child.created_date)}
+                                  </span>
+                                </div>
+                                <p className="text-xs whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>
+                                  {child.body}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Root reply form */}
+          {thread.state === 'open' && (
+            <div className="mt-4">
+              {replyingTo === 'root' ? (
+                <ReplyForm
+                  threadId={thread.id}
+                  session={session}
+                  onPosted={addReply}
+                  onCancel={() => setReplyingTo(null)}
+                  autoFocus
+                />
+              ) : (
+                <button
+                  onClick={() => setReplyingTo('root')}
+                  className="discuss-btn-ghost text-sm w-full"
+                  disabled={!session}
+                >
+                  {session ? '↩ Write a reply…' : 'Set your name above to reply'}
+                </button>
+              )}
+            </div>
+          )}
+
+          {thread.state === 'closed' && (
+            <p className="mt-4 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
+              This thread is closed.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Forum Component ──────────────────────────────────────────────────────
+
+export default function ForumDiscuss() {
+  const { session, setSession, clearSession, loaded } = useDiscussSession();
+  const [threads, setThreads] = useState<DiscussThread[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filterSlug, setFilterSlug] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const qs = filterSlug ? `?module_slug=${encodeURIComponent(filterSlug)}` : '';
+      const res = await fetch(`/api/discuss/threads${qs}`);
+      const data = await res.json();
+      if (data.success) setThreads(data.data);
+      else setError('Failed to load threads.');
+    } catch {
+      setError('Network error. Could not load discussions.');
+    } finally {
+      setLoading(false);
+    }
+  }, [filterSlug]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleCreated = (thread: DiscussThread) => {
+    setThreads((prev) => [thread, ...prev]);
+  };
+
+  return (
+    <>
+      {/* Scoped styles */}
+      <style>{`
+        .discuss-input {
+          background: var(--bg-surface);
+          border: 1px solid var(--border-card);
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 14px;
+          color: var(--text-primary);
+          outline: none;
+          transition: border-color 0.15s;
+        }
+        .discuss-input:focus {
+          border-color: var(--brand-accent);
+        }
+        .discuss-input::placeholder {
+          color: var(--text-muted);
+        }
+        .discuss-btn-primary {
+          background: var(--brand-primary);
+          color: var(--text-inverse);
+          border: none;
+          border-radius: 10px;
+          padding: 8px 18px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: opacity 0.15s;
+        }
+        .discuss-btn-primary:hover:not(:disabled) { opacity: 0.88; }
+        .discuss-btn-primary:disabled { opacity: 0.45; cursor: default; }
+        .discuss-btn-ghost {
+          background: transparent;
+          color: var(--text-secondary);
+          border: 1px solid var(--border-card);
+          border-radius: 10px;
+          padding: 8px 14px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .discuss-btn-ghost:hover:not(:disabled) { background: var(--bg-surface); }
+        .discuss-btn-ghost:disabled { opacity: 0.45; cursor: default; }
+      `}</style>
+
+      <div className="space-y-4">
+        {/* Identity Bar */}
+        {loaded && (
+          <IdentityBar
+            session={session}
+            onSet={setSession}
+            onClear={clearSession}
+          />
+        )}
+
+        {/* New Thread */}
+        <NewThreadForm session={session} onCreated={handleCreated} />
+
+        {/* Threads */}
+        <div className="space-y-3">
+          {loading && (
+            <div className="text-center py-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+              Loading discussions…
+            </div>
+          )}
+          {!loading && error && (
+            <div className="text-center py-8 text-sm text-red-500">{error}</div>
+          )}
+          {!loading && !error && threads.length === 0 && (
+            <div
+              className="text-center py-12 rounded-2xl"
+              style={{ background: 'var(--bg-surface)', border: '1px dashed var(--border-card)' }}
+            >
+              <div className="text-4xl mb-3">💬</div>
+              <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                No discussions yet
+              </p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+                Be the first to start a conversation!
+              </p>
+            </div>
+          )}
+          {!loading && threads.map((t) => (
+            <ThreadCard
+              key={t.id}
+              thread={t}
+              session={session}
+            />
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
