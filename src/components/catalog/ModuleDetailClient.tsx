@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
-import type { ModuleDetail, ModuleFeedback } from '@/types';
+import Link from 'next/link';
+import type { ModuleDetail, ModuleFeedback, DependModule } from '@/types';
 
 interface Props {
   mod: ModuleDetail;
@@ -330,6 +331,160 @@ function FAQAccordion({ faqs }: { faqs: import('@/types').FAQ[] }) {
   );
 }
 
+// ─── Depends Slider ──────────────────────────────────────────
+function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl: string }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const VISIBLE = 3;
+  const CARD_GAP = 16;
+  const CARD_WIDTH = 200;
+
+  const scroll = (dir: 'left' | 'right') => {
+    if (!trackRef.current) return;
+    const amount = (CARD_WIDTH + CARD_GAP) * VISIBLE;
+    trackRef.current.scrollBy({ left: dir === 'right' ? amount : -amount, behavior: 'smooth' });
+  };
+
+  if (modules.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+        <h2 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+          🧩 Other Modules
+        </h2>
+        {modules.length > VISIBLE && (
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => scroll('left')}
+              aria-label="Scroll left"
+              style={sliderBtnStyle}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-primary)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--brand-primary)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-card)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-card)'; }}
+            >‹</button>
+            <button
+              onClick={() => scroll('right')}
+              aria-label="Scroll right"
+              style={sliderBtnStyle}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--brand-primary)'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--brand-primary)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-card)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-card)'; }}
+            >›</button>
+          </div>
+        )}
+      </div>
+
+      {/* Scrollable track */}
+      <div style={{ position: 'relative' }}>
+        <div
+          ref={trackRef}
+          style={{
+            display: 'flex',
+            gap: `${CARD_GAP}px`,
+            overflowX: 'auto',
+            scrollSnapType: 'x mandatory',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingBottom: '4px',
+          }}
+        >
+          {modules.map((dep) => {
+            const imgUrl = dep.cover_image_url
+              ? (dep.cover_image_url.startsWith('http') ? dep.cover_image_url : `${odooUrl}${dep.cover_image_url}`)
+              : null;
+
+            return (
+              <Link
+                key={dep.id}
+                href={`/modules/${dep.slug}`}
+                style={{
+                  flexShrink: 0,
+                  width: `${CARD_WIDTH}px`,
+                  scrollSnapAlign: 'start',
+                  textDecoration: 'none',
+                  display: 'block',
+                  borderRadius: '0.875rem',
+                  overflow: 'hidden',
+                  border: '1.5px solid var(--border-card)',
+                  background: 'var(--bg-card)',
+                  transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.transform = 'translateY(-4px)';
+                  el.style.boxShadow = 'var(--shadow-card-hover)';
+                  el.style.borderColor = 'var(--brand-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.transform = 'translateY(0)';
+                  el.style.boxShadow = '';
+                  el.style.borderColor = 'var(--border-card)';
+                }}
+              >
+                {/* Cover image */}
+                <div style={{
+                  position: 'relative',
+                  aspectRatio: '16/9',
+                  backgroundColor: 'var(--bg-surface)',
+                  overflow: 'hidden',
+                }}>
+                  {imgUrl ? (
+                    <Image
+                      src={imgUrl}
+                      alt={dep.name}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="200px"
+                    />
+                  ) : (
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'linear-gradient(135deg, var(--brand-primary) 0%, #7c3aed 100%)',
+                    }}>
+                      <span style={{ fontSize: '2rem' }}>📦</span>
+                    </div>
+                  )}
+                </div>
+                {/* Name */}
+                <div style={{ padding: '0.625rem 0.75rem' }}>
+                  <p style={{
+                    margin: 0,
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.4,
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                  }}>
+                    {dep.name}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        {/* Hide scrollbar webkit */}
+        <style>{`.depends-track::-webkit-scrollbar { display: none; }`}</style>
+      </div>
+    </div>
+  );
+}
+
+const sliderBtnStyle: React.CSSProperties = {
+  width: 36, height: 36,
+  borderRadius: '50%',
+  border: '1.5px solid var(--border-card)',
+  background: 'var(--bg-card)',
+  color: 'var(--text-primary)',
+  cursor: 'pointer',
+  fontSize: '1.125rem',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+  flexShrink: 0,
+};
+
 // ─── Main Component ──────────────────────────────────────────
 export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   const [mainTab, setMainTab] = useState<'description' | 'license'>('description');
@@ -404,21 +559,36 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   return (
     <div>
       {/* ── Cover Image ─────────────────────────────────────── */}
-      {coverUrl && (
-        <div style={{
-          position: 'relative', width: '100%', aspectRatio: '16/9', marginBottom: '1.5rem',
-          borderRadius: '1rem', overflow: 'hidden', backgroundColor: 'var(--bg-surface)',
-          boxShadow: 'var(--shadow-card-hover)',
-        }}>
-          <Image src={coverUrl} alt={mod.name} fill priority style={{ objectFit: 'cover' }} sizes="100vw" />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
-          <div style={{ position: 'absolute', bottom: '1.25rem', left: '1.5rem' }}>
-            <h1 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, textShadow: '0 2px 8px rgba(0,0,0,0.5)', margin: 0 }}>
+      <div style={{
+        position: 'relative', width: '100%', aspectRatio: '16/9', marginBottom: '1.5rem',
+        borderRadius: '1rem', overflow: 'hidden', backgroundColor: 'var(--bg-surface)',
+        boxShadow: 'var(--shadow-card-hover)',
+      }}>
+        {coverUrl ? (
+          <>
+            <Image src={coverUrl} alt={mod.name} fill priority style={{ objectFit: 'cover' }} sizes="100vw" />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
+            <div style={{ position: 'absolute', bottom: '1.25rem', left: '1.5rem' }}>
+              <h1 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, textShadow: '0 2px 8px rgba(0,0,0,0.5)', margin: 0 }}>
+                {mod.name}
+              </h1>
+            </div>
+          </>
+        ) : (
+          /* Placeholder ketika tidak ada cover image */
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(135deg, var(--brand-primary) 0%, #7c3aed 100%)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '1rem',
+          }}>
+            <span style={{ fontSize: '4rem', opacity: 0.4 }}>📦</span>
+            <h1 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 700, textShadow: '0 2px 8px rgba(0,0,0,0.4)', margin: 0, textAlign: 'center', padding: '0 1.5rem' }}>
               {mod.name}
             </h1>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── Short Description ────────────────────────────────── */}
       {mod.short_description && (
@@ -632,6 +802,11 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
           {/* FAQ */}
           {descTab === 'faq' && <FAQAccordion faqs={mod.faqs ?? []} />}
         </div>
+      )}
+
+      {/* ── Depends Modules Slider ───────────────────────────── */}
+      {(mod.depends_modules?.length ?? 0) > 0 && (
+        <DependsSlider modules={mod.depends_modules} odooUrl={odooUrl} />
       )}
 
       {/* ── Reviews & Feedback ───────────────────────────────── */}

@@ -18,6 +18,25 @@ export default function HeroSection() {
   const [animating, setAnimating] = useState(false);
   const total = SLIDES.length;
 
+  const [averageRating, setAverageRating] = useState(0);
+  const [publishedModulesCount, setPublishedModulesCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch average rating from your API or data source
+    async function fetchAverageRating() {
+      try {
+        const response = await fetch('/api/average-rating'); // Replace with your actual API endpoint
+        const data = await response.json();
+        setAverageRating(data.average_rating);
+        setPublishedModulesCount(data.total_modules);
+      } catch (error) {
+        console.error('Error fetching average rating:', error);
+      }
+    }
+
+    fetchAverageRating();
+  }, []);
+
   const { t } = useLang();
 
   useEffect(() => {
@@ -122,10 +141,10 @@ export default function HeroSection() {
           display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem',
         }}>
           {[
-            { value: '10+', label: 'Modules Published' },
+            { value: publishedModulesCount + '+', label: 'Modules Published' },
             { value: '10+', label: 'Happy Clients' },
             { value: '5+', label: 'Years Experience' },
-            { value: '0★', label: 'Average Rating' },
+            { value: averageRating.toFixed(1) + '★', label: 'Average Rating' },
           ].map((stat) => (
             <div key={stat.label} style={{
               textAlign: 'center',

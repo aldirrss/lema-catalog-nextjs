@@ -39,6 +39,24 @@ export const ODOO_VERSIONS: { value: OdooVersion; label: string }[] = [
   { value: '8', label: 'Odoo 8' },
 ];
 
+export const SORT_OPTIONS = [
+  { value: '',              label: 'Sort By' },
+  { value: 'newest',        label: 'Newest' },
+  { value: 'oldest',        label: 'Oldest' },
+  { value: 'name_asc',      label: 'Name A → Z' },
+  { value: 'name_desc',     label: 'Name Z → A' },
+  { value: 'price_asc',     label: 'Price: Low to High' },
+  { value: 'price_desc',    label: 'Price: High to Low' },
+  { value: 'rating_desc',   label: 'Top Rated' },
+  { value: 'top_purchase',  label: 'Top Purchase' },
+];
+
+export const PRICE_OPTIONS = [
+  { value: '',      label: 'All Prices' },
+  { value: 'free',  label: 'Free' },
+  { value: 'paid',  label: 'Paid' },
+];
+
 export interface ModuleVersion {
   id: number;
   odoo_version: OdooVersion;
@@ -67,6 +85,10 @@ export interface Module {
   category: Pick<Category, 'id' | 'name'> | null;
   feature_count: number;
   screenshot_count: number;
+  count_download: number;
+  count_purchase: number;
+  /** count_download jika free, count_purchase jika paid */
+  popularity_count: number;
 }
 
 export interface ReleaseNote {
@@ -91,6 +113,14 @@ export interface ModuleFeedback {
   created_date: string;
 }
 
+export interface DependModule {
+  id: number;
+  name: string;
+  slug: string;
+  cover_image_url: string | null;
+  technical_name: string;
+}
+
 export interface ModuleDetail extends Module {
   description: string;
   license: string;
@@ -100,6 +130,7 @@ export interface ModuleDetail extends Module {
   faqs: FAQ[];
   feedbacks: ModuleFeedback[];
   feedback_count: number;
+  depends_modules: DependModule[];
 }
 
 // ============================================================

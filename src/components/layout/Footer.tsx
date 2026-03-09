@@ -39,6 +39,11 @@ export default function Footer() {
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}>
                 {t.footer.moduleCatalog}
               </Link></li>
+              <li><Link href="/catalog?odoo_version=19" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand-primary)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}>
+                Odoo 19
+              </Link></li>
               <li><Link href="/catalog?odoo_version=18" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand-primary)')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}>

@@ -175,7 +175,7 @@ export const translations: Record<LangCode, TranslationKeys> = {
       backToCatalog: '← Back to Catalog',
     },
     footer: {
-      tagline: 'Your trusted partner for Odoo development, customization, and ERP implementation.',
+      tagline: 'Your trusted for Odoo development, customization, and ERP implementation.',
       products: 'Products',
       moduleCatalog: 'Module Catalog',
       company: 'Company',

@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-br from-brand-700 to-brand-600 py-16 text-white">
+      <div className="py-16 text-white" style={{ background: 'var(--brand-primary)', borderColor: 'var(--border-card)', color: 'var(--text-inverse)' }}>
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold">Contact Us</h1>
-          <p className="mt-3 text-lg text-blue-100">
+          <h1 className="text-4xl font-bold sm:text-5xl">Contact Us</h1>
+          <p className="mt-3 text-lg">
             Have a question or project in mind? We&apos;d love to hear from you.
           </p>
         </div>
@@ -24,10 +24,10 @@ export default function ContactPage() {
           {/* Contact Info */}
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Get in Touch</h2>
-              <p className="mt-3 text-gray-600">
+              <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Get in Touch</h2>
+              <p className="mt-3" style={{ color: 'var(--text-muted)' }}>
                 Whether you need a custom Odoo module, have questions about our catalog,
-                or want to discuss a full ERP implementation — our team is here to help.
+                or want to discuss a full ERP implementation. Our team is here to help.
               </p>
             </div>
 
@@ -36,26 +36,26 @@ export default function ContactPage() {
                 {
                   icon: '📧',
                   label: 'Email',
-                  value: 'hello@lemacore.tech',
-                  href: 'mailto:hello@lemacore.tech',
+                  value: 'lemacoreofficial@gmail.com',
+                  href: 'mailto:lemacoreofficial@gmail.com',
                 },
                 {
                   icon: '💬',
                   label: 'WhatsApp',
-                  value: '+62 812-3456-7890',
-                  href: 'https://wa.me/6281234567890',
+                  value: '+62 815-2976-3081',
+                  href: 'https://wa.me/6281529763081',
                 },
                 {
                   icon: '📍',
                   label: 'Location',
-                  value: 'Jakarta, Indonesia',
+                  value: 'South Jakarta, Jakarta, Indonesia',
                   href: null,
                 },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   <span className="text-xl">{item.icon}</span>
                   <div>
-                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                    <p className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
                       {item.label}
                     </p>
                     {item.href ? (
@@ -63,7 +63,9 @@ export default function ContactPage() {
                         {item.value}
                       </a>
                     ) : (
-                      <p className="text-sm font-medium text-gray-900">{item.value}</p>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                        {item.value}
+                      </p>
                     )}
                   </div>
                 </div>

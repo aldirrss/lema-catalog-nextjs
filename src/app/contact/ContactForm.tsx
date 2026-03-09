@@ -101,7 +101,7 @@ export default function ContactForm() {
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
           width: '100%', borderRadius: '0.5rem',
-          backgroundColor: pending ? '#93c5fd' : '#2e4f8e',
+          backgroundColor: pending ? 'var(--brand-primary-accent)' : 'var(--brand-primary)',
           padding: '0.75rem 1.25rem', fontSize: '0.875rem', fontWeight: 600,
           color: 'white', border: 'none', cursor: pending ? 'not-allowed' : 'pointer',
           transition: 'background-color 0.15s',

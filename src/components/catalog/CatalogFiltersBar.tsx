@@ -3,7 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { Category } from '@/types';
-import { ODOO_VERSIONS } from '@/types';
+import { ODOO_VERSIONS, SORT_OPTIONS, PRICE_OPTIONS } from '@/types';
 
 interface CatalogFiltersBarProps {
   categories: Category[];
@@ -25,23 +25,6 @@ const inputStyle: React.CSSProperties = {
   fontFamily: 'inherit',
   cursor: 'pointer',
 };
-
-const SORT_OPTIONS = [
-  { value: '',             label: 'Sort By' },
-  { value: 'newest',       label: 'Newest' },
-  { value: 'oldest',       label: 'Oldest' },
-  { value: 'name_asc',     label: 'Name A → Z' },
-  { value: 'name_desc',    label: 'Name Z → A' },
-  { value: 'price_asc',    label: 'Price: Low to High' },
-  { value: 'price_desc',   label: 'Price: High to Low' },
-  { value: 'rating_desc',  label: 'Top Rated' },
-];
-
-const PRICE_OPTIONS = [
-  { value: '',      label: 'All Prices' },
-  { value: 'free',  label: 'Free' },
-  { value: 'paid',  label: 'Paid' },
-];
 
 export default function CatalogFiltersBar({
   categories,

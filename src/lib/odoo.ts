@@ -73,7 +73,7 @@ export async function getModules(
     search:       filters.search,
     category_id:  filters.category_id,
     odoo_version: filters.odoo_version,
-    price:        filters.price,
+    price_filter: filters.price,
     sort_by:      filters.sort_by,
     limit: 12,
   });
