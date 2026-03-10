@@ -25,7 +25,8 @@ export const id: TranslationKeys = {
     buttonBrowse: 'Jelajahi Katalog',
     buttonContact: 'Hubungi Ahli',
     published: 'Modul Diterbitkan',
-    clients: 'Klien Puas',
+    // project completed
+    clients: 'Proyek Selesai',
     experience: 'Tahun Pengalaman',
     avgRating: 'Rating Rata-rata',
     trustBadge: 'Percayakan sistem bisnis Anda kepada kami ❤️',

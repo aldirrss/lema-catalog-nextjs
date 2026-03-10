@@ -25,7 +25,8 @@ export const zh: TranslationKeys = {
     buttonBrowse: '浏览目录',
     buttonContact: '咨询专家',
     published: '已发布模块',
-    clients: '满意客户',
+    // project completed
+    clients: '已完成项目',
     experience: '多年经验',
     avgRating: '平均评分',
     trustBadge: '将您的业务系统托付给我们 ❤️',

@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-
   images: {
     remotePatterns: [
       {
@@ -22,7 +20,7 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    unoptimized: process.env.NODE_ENV === 'development',
+    unoptimized: process.env.NODE_ENV === 'production', // Disable optimization in production
   },
 };
 

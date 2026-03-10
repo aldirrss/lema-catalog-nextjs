@@ -25,7 +25,8 @@ export const ar: TranslationKeys = {
     buttonBrowse: 'تصفح الكتالوج',
     buttonContact: 'تواصل مع خبير',
     published: 'الوحدات المنشورة',
-    clients: 'عملاء سعداء',
+    // project completed
+    clients: 'المشاريع المكتملة',
     experience: 'سنوات الخبرة',
     avgRating: 'متوسط التقييم',
     trustBadge: 'ثق بنظام عملك معنا ❤️',
