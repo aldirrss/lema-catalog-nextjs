@@ -26,7 +26,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://erp.lemacore.com:8018/api/:path*",
+        destination: "http://erp.lemacore.com:8018/api/:path*",
       },
     ];
   },
