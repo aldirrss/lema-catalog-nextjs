@@ -25,7 +25,7 @@ export const en: TranslationKeys = {
     buttonBrowse: 'Browse Catalog',
     buttonContact: 'Talk to an Expert',
     published: 'Modules Published',
-    clients: 'Happy Clients',
+    clients: 'Projects Completed',
     experience: 'Years of Experience',
     avgRating: 'Average Rating',
     trustBadge: 'Trust your business system to us ❤️',
