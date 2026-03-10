@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  output: 'standalone',
-
   images: {
     remotePatterns: [
       {
@@ -23,7 +20,15 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    // unoptimized: process.env.NODE_ENV === 'development',
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://erp.lemacore.com/api/:path*",
+      },
+    ];
   },
 };
 
