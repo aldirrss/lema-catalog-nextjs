@@ -43,12 +43,12 @@ jobs:
           body: |
             Deploy completed! 🎉
 
-            Detail:
+            Details:
             - Project  : lema-catalog-nextjs
             - Branch   : ${{ github.ref_name }}
             - Commit   : ${{ github.event.commits[0].message }}
-            - Oleh     : ${{ github.actor }}
-            - Waktu    : ${{ github.event.head_commit.timestamp }}
+            - Author   : ${{ github.actor }}
+            - Date     : ${{ github.event.head_commit.timestamp }}
 
             See Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -66,12 +66,11 @@ jobs:
           body: |
             Deploy failed! ⚠️
 
-            Detail:
+            Details:
             - Project  : lema-catalog-nextjs
             - Branch   : ${{ github.ref_name }}
             - Commit   : ${{ github.event.commits[0].message }}
-            - Oleh     : ${{ github.actor }}
-            - Waktu    : ${{ github.event.head_commit.timestamp }}
+            - Author   : ${{ github.actor }}
+            - Date     : ${{ github.event.head_commit.timestamp }}
 
             Check Error: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
