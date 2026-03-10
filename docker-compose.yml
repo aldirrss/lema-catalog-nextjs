@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  lemacore-catalog:
+    image: yourdockerhubusername/lemacore-catalog:latest
+    container_name: lemacore-catalog
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ODOO_BASE_URL=${ODOO_BASE_URL}
+      - NEXT_PUBLIC_ODOO_BASE_URL=${NEXT_PUBLIC_ODOO_BASE_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET}
+    env_file:
+      - .env
+    networks:
+      - lemacore-network
+
+networks:
+  lemacore-network:
+    driver: bridge

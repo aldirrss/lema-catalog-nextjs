@@ -1,19 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+
   images: {
-    // Disable Next.js image optimization for localhost Odoo images
-    // This avoids the "private IP" error in development
     remotePatterns: [
       {
         protocol: 'http',
-        hostname: 'localhost',
+        hostname: 'erp.lemacore.com',
         port: '8018',
         pathname: '/**',
       },
       {
         protocol: 'http',
-        hostname: 'localhost',
-        port: '8069',
+        hostname: '**',
         pathname: '/**',
       },
       {
@@ -22,7 +21,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // Allow private IPs (needed for localhost in Next.js 16)
     dangerouslyAllowSVG: true,
     unoptimized: process.env.NODE_ENV === 'development',
   },

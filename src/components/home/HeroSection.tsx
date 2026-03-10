@@ -145,7 +145,7 @@ export default function HeroSection() {
             { value: publishedModulesCount + '+', label: t.hero.published },
             { value: '10+', label: t.hero.clients },
             { value: '5+', label: t.hero.experience },
-            { value: averageRating.toFixed(1) + '★', label: t.hero.avgRating },
+            { value: averageRating.toFixed(1) + ' ★', label: t.hero.avgRating },
           ].map((stat) => (
             <div key={stat.label} style={{
               textAlign: 'center',

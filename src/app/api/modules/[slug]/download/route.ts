@@ -12,23 +12,23 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  console.log('[download route] POST received, slug:', slug);
+  // console.log('[download route] POST received, slug:', slug);
 
   try {
     const odooUrl = `${ODOO_BASE_URL}/api/modules/${encodeURIComponent(slug)}/download`;
-    console.log('[download route] forwarding to Odoo:', odooUrl);
+    // console.log('[download route] forwarding to Odoo:', odooUrl);
 
     const res = await fetch(odooUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       cache: 'no-store',
     });
-    console.log('[download route] Odoo response status:', res.status);
+    // console.log('[download route] Odoo response status:', res.status);
     const data = await res.json();
-    console.log('[download route] Odoo response data:', data);
+    // console.log('[download route] Odoo response data:', data);
     return NextResponse.json(data, { status: res.status });
   } catch (err) {
-    console.error('[download route] error:', err);
+    // console.error('[download route] error:', err);
     return NextResponse.json(
       { success: false, error: 'Failed to reach Odoo backend' },
       { status: 502 },

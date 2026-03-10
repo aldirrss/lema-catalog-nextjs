@@ -83,7 +83,7 @@ export default function ContactPage() {
           {/* Form */}
           <div className="lg:col-span-3">
             <div className="card p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t.contact.sendMessage}</h2>
+              <h2 className="text-xl font-semibold mb-6">{t.contact.sendMessage}</h2>
               <ContactForm />
             </div>
           </div>

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   const odooUrl = `${ODOO_BASE_URL}/api/modules?${q.toString()}`;
 
-  console.log('[proxy] → Odoo:', odooUrl);
+  // console.log('[proxy] → Odoo:', odooUrl);
 
   try {
     const res = await fetch(odooUrl, { cache: 'no-store' });
