@@ -167,7 +167,7 @@ export const en: TranslationKeys = {
     readySubtitle: 'Explore our module catalog or reach out to our team.',
     browseCatalog: 'Browse Catalog',
     yearsExp: 'Years of Experience',
-    happyClients: 'Happy Clients',
+    happyClients: 'Project Deliver',
     modulesPublished: 'Modules Published',
     avgRating: 'Average Rating',
   },

@@ -168,7 +168,7 @@ export const id: TranslationKeys = {
     readySubtitle: 'Jelajahi katalog modul kami atau hubungi tim kami.',
     browseCatalog: 'Jelajahi Katalog',
     yearsExp: 'Tahun Pengalaman',
-    happyClients: 'Klien Puas',
+    happyClients: 'Proyek Selesai',
     modulesPublished: 'Modul Diterbitkan',
     avgRating: 'Rating Rata-rata',
   },
