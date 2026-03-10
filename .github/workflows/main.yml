@@ -28,3 +28,50 @@ jobs:
             npm run build
             pm2 restart lema-catalog-nextjs || pm2 start npm --name "lema-catalog-nextjs" -- start
             echo "✅ Deployment completed!"
+
+      - name: Send Email (Success)
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: ${{ secrets.MAIL_TO }}
+          from: GitHub Actions <${{ secrets.MAIL_USERNAME }}>
+          subject: "✅ Deploy Completed - lema-catalog-nextjs"
+          body: |
+            Deploy completed! 🎉
+
+            Detail:
+            - Project  : lema-catalog-nextjs
+            - Branch   : ${{ github.ref_name }}
+            - Commit   : ${{ github.event.commits[0].message }}
+            - Oleh     : ${{ github.actor }}
+            - Waktu    : ${{ github.event.head_commit.timestamp }}
+
+            See Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Send Email (Failed)
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: ${{ secrets.MAIL_TO }}
+          from: GitHub Actions <${{ secrets.MAIL_USERNAME }}>
+          subject: "❌ Deploy Failed - lema-catalog-nextjs"
+          body: |
+            Deploy failed! ⚠️
+
+            Detail:
+            - Project  : lema-catalog-nextjs
+            - Branch   : ${{ github.ref_name }}
+            - Commit   : ${{ github.event.commits[0].message }}
+            - Oleh     : ${{ github.actor }}
+            - Waktu    : ${{ github.event.head_commit.timestamp }}
+
+            Check Error: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
