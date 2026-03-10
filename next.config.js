@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   output: 'standalone',
 
   images: {
@@ -22,7 +23,7 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    unoptimized: process.env.NODE_ENV === 'development',
+    // unoptimized: process.env.NODE_ENV === 'development',
   },
 };
 
