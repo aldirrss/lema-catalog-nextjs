@@ -16,30 +16,74 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.com'),
-  icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en-US': '/en',
+      'id-ID': '/id',
+    },
   },
+  icons: {
+    icon: [
+      { url: '/favicon.png' },
+      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon.png' },
+      { url: '/icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
   title: {
     default: 'Lema Core Technologies — Odoo Module Catalog',
     template: '%s | Lema Core Technologies',
   },
   description:
-    'Discover premium Odoo modules developed by Lema Core Technologies. Accounting, HR, Inventory, Integrations and more.',
-  keywords: ['Odoo', 'modules', 'addons', 'ERP', 'Indonesia', 'Lema Core'],
+    'Discover premium Odoo modules developed by Lema Core Technologies. Expert Odoo development, customization, and ERP implementation for Indonesian & global businesses.',
+  keywords: ['Odoo', 'Odoo Indonesia', 'Odoo Modules', 'ERP Indonesia', 'Odoo ERP', 'Lema Core', 'Odoo Customization', 'Odoo Development'],
   authors: [{ name: 'Lema Core Technologies', url: 'https://lemacore.com' }],
+  creator: 'Lema Core Technologies',
+  publisher: 'Lema Core Technologies',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: 'https://lemacore.com',
     siteName: 'Lema Core Technologies',
     title: 'Lema Core Technologies — Odoo Module Catalog',
-    description: 'Premium Odoo modules for Indonesian & global businesses.',
+    description: 'Premium Odoo modules and expert ERP solutions for Indonesian & global businesses.',
+    images: [
+      {
+        url: '/images/hero-bg.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lema Core Technologies Odoo Modules',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Lema Core Technologies — Odoo Module Catalog',
-    description: 'Premium Odoo modules for Indonesian & global businesses.',
+    description: 'Premium Odoo modules and expert ERP solutions for Indonesian & global businesses.',
+    images: ['/images/hero-bg.png'],
+    creator: '@lemacore',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  category: 'technology',
 };
 
 export default function RootLayout({

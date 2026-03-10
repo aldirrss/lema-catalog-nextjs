@@ -157,7 +157,7 @@ export const en: TranslationKeys = {
     missionDescription2: 'We believe that Odoo, when properly implemented and customized, can transform how businesses operate. Our team of certified Odoo developers brings years of hands-on experience across industries including retail, manufacturing, logistics, and professional services.',
     missionDescription3: 'Every module we publish in this catalog is the result of real client feedback and battle-tested in production environments — so you can deploy with confidence.',
     whatWeDo: 'What We Do',
-    meetTeam: 'Our Team',
+    meetTeam: 'Technical Experts',
     team: {
       aldi: { role: 'Odoo Software Engineer' },
       herul: { role: 'Odoo Software Engineer' },
@@ -167,7 +167,7 @@ export const en: TranslationKeys = {
     readySubtitle: 'Explore our module catalog or reach out to our team.',
     browseCatalog: 'Browse Catalog',
     yearsExp: 'Years of Experience',
-    happyClients: 'Happy Clients',
+    happyClients: 'Project Deliver',
     modulesPublished: 'Modules Published',
     avgRating: 'Average Rating',
   },

@@ -158,7 +158,7 @@ export const id: TranslationKeys = {
     missionDescription2: 'Kami percaya bahwa Odoo, jika diimplementasikan dan dikustomisasi dengan benar, dapat mentransformasi cara bisnis beroperasi. Tim pengembang Odoo bersertifikat kami membawa pengalaman praktis bertahun-tahun di berbagai industri termasuk ritel, manufaktur, logistik, dan layanan profesional.',
     missionDescription3: 'Setiap modul yang kami terbitkan dalam katalog ini adalah hasil dari umpan balik klien nyata dan telah teruji di lingkungan produksi — sehingga Anda dapat menerapkannya dengan percaya diri.',
     whatWeDo: 'Layanan Kami',
-    meetTeam: 'Tim Kami',
+    meetTeam: 'Tenaga Ahli Teknis',
     team: {
       aldi: { role: 'Odoo Software Engineer' },
       herul: { role: 'Odoo Software Engineer' },
@@ -168,7 +168,7 @@ export const id: TranslationKeys = {
     readySubtitle: 'Jelajahi katalog modul kami atau hubungi tim kami.',
     browseCatalog: 'Jelajahi Katalog',
     yearsExp: 'Tahun Pengalaman',
-    happyClients: 'Klien Puas',
+    happyClients: 'Proyek Selesai',
     modulesPublished: 'Modul Diterbitkan',
     avgRating: 'Rating Rata-rata',
   },

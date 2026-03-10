@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLang } from '../layout/LangProvider';
 
 // ─── Add more image paths here to add more slides ───
@@ -11,7 +12,8 @@ const SLIDES = [
   '/images/hero-bg-3.png',
 ];
 
-const SLIDE_INTERVAL = 3000;
+const SLIDE_INTERVAL = 6000; // Total time per slide
+const TRANSITION_DURATION = 1000; // Duration of the cross-fade
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0);
@@ -21,71 +23,75 @@ export default function HeroSection() {
   const [averageRating, setAverageRating] = useState(0);
   const [publishedModulesCount, setPublishedModulesCount] = useState(0);
 
+  const { t } = useLang();
+
   useEffect(() => {
-    // Fetch average rating from your API or data source
     async function fetchAverageRating() {
       try {
-        const response = await fetch('/api/average-rating'); // Replace with your actual API endpoint
+        const response = await fetch('/api/average-rating');
         const data = await response.json();
-        setAverageRating(data.average_rating);
-        setPublishedModulesCount(data.total_modules);
+        setAverageRating(data.average_rating || 0);
+        setPublishedModulesCount(data.total_modules || 0);
       } catch (error) {
         console.error('Error fetching average rating:', error);
       }
     }
-
     fetchAverageRating();
   }, []);
 
-  const { t } = useLang();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimating(true);
-      setTimeout(() => {
-        setCurrent((c) => (c + 1) % total);
-        setAnimating(false);
-      }, 3000);
-    }, SLIDE_INTERVAL);
-    return () => clearInterval(interval);
-  }, [total]);
-  
-  const goTo = (index: number) => {
-    if (index === current) return;
+  const goTo = useCallback((index: number) => {
+    if (index === current || animating) return;
     setAnimating(true);
     setTimeout(() => {
       setCurrent(index);
       setAnimating(false);
-    }, 8000);
-  };
-  
-  const next = () => goTo((current + 1) % total);
-  const prev = () => goTo((current - 1 + total) % total);
+    }, TRANSITION_DURATION);
+  }, [current, animating]);
+
+  const next = useCallback(() => goTo((current + 1) % total), [current, total, goTo]);
+  const prev = useCallback(() => goTo((current - 1 + total) % total), [current, total, goTo]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!animating) {
+        next();
+      }
+    }, SLIDE_INTERVAL);
+    return () => clearInterval(interval);
+  }, [next, animating]);
 
   return (
-    <section style={{
-      position: 'relative',
-      height: '100vh',
-      minHeight: '600px',
-      overflow: 'hidden',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-
+    <section 
+      aria-label="Hero Section"
+      style={{
+        position: 'relative',
+        height: '100vh',
+        minHeight: '600px',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {/* ── Slides ── */}
       {SLIDES.map((src, i) => (
         <div key={src} style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `url(${src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
           opacity: i === current ? (animating ? 0 : 1) : 0,
-          transition: 'opacity 0.8s ease-in-out',
+          transition: `opacity ${TRANSITION_DURATION}ms ease-in-out`,
           zIndex: 0,
-        }} />
+        }}>
+          <Image
+            src={src}
+            alt=""
+            fill
+            priority={i === 0}
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
+            sizes="100vw"
+            quality={85}
+          />
+        </div>
       ))}
 
       {/* ── Dark overlay ── */}
@@ -107,7 +113,7 @@ export default function HeroSection() {
           color: '#bfdbfe', marginBottom: '1.5rem', backdropFilter: 'blur(6px)',
           border: '1px solid rgba(255,255,255,0.2)',
         }}>
-          <span style={{ height: '0.5rem', width: '0.5rem', borderRadius: '9999px', backgroundColor: '#4ade80' }} />
+          <span style={{ height: '0.5rem', width: '0.5rem', borderRadius: '9999px', backgroundColor: '#4ade80' }} aria-hidden="true" />
           {t.hero.trustBadge}
         </div>
 
@@ -119,7 +125,7 @@ export default function HeroSection() {
         }}>
           {t.hero.title.split(' ').map((word, i) => (
             <span key={i} style={{ color: i % 2 === 0 ? 'white' : 'var(--brand-accent)' }}>
-              {word}
+              {word}{' '}
             </span>
           ))}
         </h1>
@@ -131,21 +137,20 @@ export default function HeroSection() {
         </p>
 
         <div style={{ marginTop: '2.15rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
-          <Link href="/catalog" className="hero-btn-primary">{t.hero.buttonBrowse} →</Link>
-          <Link href="/contact" className="hero-btn-secondary">{t.hero.buttonContact}</Link>
+          <Link href="/catalog" className="hero-btn-primary" aria-label={t.hero.buttonBrowse}>{t.hero.buttonBrowse} →</Link>
+          <Link href="/contact" className="hero-btn-secondary" aria-label={t.hero.buttonContact}>{t.hero.buttonContact}</Link>
         </div>
 
         {/* Stats */}
         <div style={{
           marginTop: '2.15rem',
-          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem',
-          
-        }}>
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem',
+        }} className="md:grid-cols-4">
           {[
-            { value: publishedModulesCount + '+', label: t.hero.published },
+            { value: (publishedModulesCount || 0) + '+', label: t.hero.published },
             { value: '10+', label: t.hero.clients },
             { value: '5+', label: t.hero.experience },
-            { value: averageRating.toFixed(1) + ' ★', label: t.hero.avgRating },
+            { value: (averageRating || 0).toFixed(1) + ' ★', label: t.hero.avgRating },
           ].map((stat) => (
             <div key={stat.label} style={{
               textAlign: 'center',
@@ -191,6 +196,7 @@ export default function HeroSection() {
               key={i}
               onClick={() => goTo(i)}
               aria-label={`Go to slide ${i + 1}`}
+              aria-current={i === current}
               style={{
                 width: i === current ? '2rem' : '0.5rem',
                 height: '0.5rem',
@@ -275,6 +281,10 @@ export default function HeroSection() {
 
         @media (max-width: 640px) {
           .slide-arrow { display: none; }
+          .md\\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (min-width: 768px) {
+          .md\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
         }
       `}</style>
     </section>
