@@ -15,7 +15,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.tech'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.com'),
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description:
     'Discover premium Odoo modules developed by Lema Core Technologies. Accounting, HR, Inventory, Integrations and more.',
   keywords: ['Odoo', 'modules', 'addons', 'ERP', 'Indonesia', 'Lema Core'],
-  authors: [{ name: 'Lema Core Technologies', url: 'https://lemacore.tech' }],
+  authors: [{ name: 'Lema Core Technologies', url: 'https://lemacore.com' }],
   openGraph: {
     type: 'website',
     locale: 'en_US',

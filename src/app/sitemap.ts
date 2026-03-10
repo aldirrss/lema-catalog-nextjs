@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getModules } from '@/lib/odoo';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.tech';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lemacore.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [

@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  lemacore-catalog:
-    image: yourdockerhubusername/lemacore-catalog:latest
-    container_name: lemacore-catalog
+  nextjs-catalog:
+    image: docker.io/mraldirs1231/nextjs-catalog:latest
+    container_name: nextjs-catalog
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -16,8 +16,8 @@ services:
     env_file:
       - .env
     networks:
-      - lemacore-network
+      - nextjs-network
 
 networks:
-  lemacore-network:
+  nextjs-network:
     driver: bridge

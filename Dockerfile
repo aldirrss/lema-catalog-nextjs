@@ -15,16 +15,19 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
-# Build args untuk environment saat build time
+# ARG harus dideklarasikan SEBELUM COPY . .
 ARG NEXT_PUBLIC_ODOO_BASE_URL
 ARG NEXT_PUBLIC_SITE_URL
+ARG ODOO_BASE_URL
 
 ENV NEXT_PUBLIC_ODOO_BASE_URL=$NEXT_PUBLIC_ODOO_BASE_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV ODOO_BASE_URL=$ODOO_BASE_URL
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY . .
 
 RUN npm run build
 
