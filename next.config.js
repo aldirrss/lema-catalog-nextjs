@@ -21,15 +21,6 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
   },
-
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://erp.lemacore.com:8018/api/:path*",
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;
