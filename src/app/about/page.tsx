@@ -40,7 +40,7 @@ export default function AboutPage() {
     { 
       name: 'Aldi',  
       role: 'Odoo Software Developer',
-      photo: '/images/team/team-1.jpg', 
+      photo: '/images/team/al.png', 
       initials: 'AL',
       expertise: ['Odoo Backend', 'System Architecture', 'API Integration'],
       linkedin: 'https://linkedin.com/in/aldirosidsaputra',
