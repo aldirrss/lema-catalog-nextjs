@@ -12,7 +12,7 @@ interface Props {
 
 // Nomor WhatsApp & Email bisnis — ganti sesuai kontak kamu
 export const WA_NUMBER = '6281529763081';
-export const BUSINESS_EMAIL = 'aldialputra@gmail.com';
+export const BUSINESS_EMAIL = 'lemacoreofficial@gmail.com';
 
 const VERSION_COLORS: Record<string, string> = {
   '19': '#6d28d9',
