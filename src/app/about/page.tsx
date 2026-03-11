@@ -49,6 +49,18 @@ export default function AboutPage() {
       contact: 'mailto:aldirosidsaputra@gmail.com',
       projects: '15+'
     },
+    { 
+      name: 'Herul',  
+      role: 'Odoo Software Developer',
+      photo: '/images/team/team-2.jpg', 
+      initials: 'HR',
+      expertise: ['Odoo Backend', 'System Architecture', 'API Integration'],
+      linkedin: 'https://linkedin.com/in/herulramdani',
+      instagram: 'https://instagram.com/herulramdani',
+      portfolio: 'https://herul.lemacore.com',
+      contact: 'mailto:herulramdani@gmail.com',
+      projects: '50+'
+    },
   ];
 
   return (
@@ -103,7 +115,7 @@ export default function AboutPage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-center">
+          <div className="flex flex-wrap justify-center gap-8">
             {TEAM.map((member) => (
               <div key={member.name} className="card overflow-hidden group hover:border-brand-500 transition-all duration-300 mx-auto w-full max-w-md sm:col-span-1 lg:col-start-2 lg:col-span-1 xl:col-start-2 xl:col-span-2">
                 <div className="p-8">
