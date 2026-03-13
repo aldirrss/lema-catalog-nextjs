@@ -47,7 +47,7 @@ export default function HeroSection() {
 
   return (
     <section
-      aria-label="LemaCore Technologies Hero"
+      aria-label="Lema Core Technologies Hero"
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -146,7 +146,7 @@ export default function HeroSection() {
               color: '#fff',
             }}
           >
-            LemaCore Technologies
+            Lema Core Technologies
           </motion.h1>
 
           <motion.p

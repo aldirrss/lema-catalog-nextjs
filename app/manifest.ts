@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'LemaCore Technologies',
-    short_name: 'LemaCore',
-    description: 'Discover top-tier Odoo modules crafted by LemaCore Technologies. Elevate your Odoo experience with our expertly developed, feature-rich modules designed to enhance functionality and streamline operations.',
+    name: 'Lema Core Technologies',
+    short_name: 'Lema Core',
+    description: 'Discover top-tier Odoo modules crafted by Lema Core Technologies. Elevate your Odoo experience with our expertly developed, feature-rich modules designed to enhance functionality and streamline operations.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

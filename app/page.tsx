@@ -8,10 +8,10 @@ import HomeSectionHeader from '@/components/home/HomeSectionHeader';
 import SeeAllModulesButton from '@/components/home/SeeAllModulesButton';
 
 export const metadata: Metadata = {
-  title: 'LemaCore Technologies | Odoo Development Experts',
-  authors: [{ name: 'LemaCore Technologies', url: 'https://lemacore.com' }],
+  title: 'Lema Core Technologies | Odoo Development Experts',
+  authors: [{ name: 'Lema Core Technologies', url: 'https://lemacore.com' }],
   description:
-    'Discover premium Odoo modules developed by LemaCore Technologies. Expert Odoo development, customization, and ERP implementation for Indonesian & global businesses.',
+    'Discover premium Odoo modules developed by Lema Core Technologies. Expert Odoo development, customization, and ERP implementation for Indonesian & global businesses.',
   keywords: ['Odoo', 'Odoo Indonesia', 'Odoo Modules', 'ERP Indonesia', 'Odoo ERP', 'Lema Core', 'Odoo Customization', 'Odoo Development'],
 };
 

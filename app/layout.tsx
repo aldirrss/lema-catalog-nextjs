@@ -42,15 +42,15 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   title: {
-    default: 'LemaCore Technologies | Odoo Module Catalog',
-    template: '%s | LemaCore Technologies',
+    default: 'Lema Core Technologies | Odoo Module Catalog',
+    template: '%s | Lema Core Technologies',
   },
   description:
-    'Discover premium Odoo modules developed by LemaCore Technologies. Expert Odoo development, customization, and ERP implementation for Indonesian & global businesses.',
+    'Discover premium Odoo modules developed by Lema Core Technologies. Expert Odoo development, customization, and ERP implementation for Indonesian & global businesses.',
   keywords: ['Odoo', 'Odoo Indonesia', 'Odoo Modules', 'ERP Indonesia', 'Odoo ERP', 'Lema Core', 'Odoo Customization', 'Odoo Development'],
-  authors: [{ name: 'LemaCore Technologies', url: siteUrl }],
-  creator: 'LemaCore Technologies',
-  publisher: 'LemaCore Technologies',
+  authors: [{ name: 'Lema Core Technologies', url: siteUrl }],
+  creator: 'Lema Core Technologies',
+  publisher: 'Lema Core Technologies',
   formatDetection: {
     email: false,
     address: false,
@@ -61,21 +61,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     alternateLocale: ['id_ID', 'ar_SA', 'fr_FR', 'zh_CN', 'es_ES'],
     url: siteUrl,
-    siteName: 'LemaCore Technologies',
-    title: 'LemaCore Technologies | Odoo Module Catalog',
+    siteName: 'Lema Core Technologies',
+    title: 'Lema Core Technologies | Odoo Module Catalog',
     description: 'Premium Odoo modules and expert ERP solutions for Indonesian & global businesses.',
     images: [
       {
         url: '/images/hero-bg.png',
         width: 1200,
         height: 630,
-        alt: 'LemaCore Technologies Odoo Modules',
+        alt: 'Lema Core Technologies Odoo Modules',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LemaCore Technologies | Odoo Module Catalog',
+    title: 'Lema Core Technologies | Odoo Module Catalog',
     description: 'Premium Odoo modules and expert ERP solutions for Indonesian & global businesses.',
     images: ['/images/hero-bg.png'],
     creator: '@lemacore',
@@ -106,7 +106,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'LemaCore Technologies',
+              name: 'Lema Core Technologies',
               url: siteUrl,
               logo: `${siteUrl}/icon.png`,
               sameAs: [siteUrl],
@@ -122,7 +122,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'LemaCore Technologies',
+              name: 'Lema Core Technologies',
               url: siteUrl,
               inLanguage: ['en', 'id', 'ar', 'fr', 'zh', 'es'],
               potentialAction: {
