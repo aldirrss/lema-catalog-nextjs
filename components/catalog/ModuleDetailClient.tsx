@@ -457,7 +457,7 @@ function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl:
         >
           {modules.map((dep) => {
             const imgUrl = dep.cover_image_url
-              ? (dep.cover_image_url.startsWith('http') ? dep.cover_image_url : `${odooUrl}${dep.cover_image_url}`)
+              ? (dep.cover_image_url ? dep.cover_image_url : `${odooUrl}${dep.cover_image_url}`)
               : null;
 
             return (
