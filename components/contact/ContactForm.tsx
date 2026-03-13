@@ -72,7 +72,7 @@ export default function ContactForm() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         <div>
           <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-            Phone
+            Phone (Optional)
           </label>
           <input
             name="phone" type="text"
