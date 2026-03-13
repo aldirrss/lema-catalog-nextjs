@@ -6,6 +6,7 @@ import { useState } from 'react';
 export type TeamMember = {
   name: string;
   role: string;
+  bio?: string;
   photo: string;
   initials: string;
   expertise?: string[];
@@ -32,7 +33,7 @@ export default function TeamAvatar({ member }: { member: TeamMember }) {
           src={member.photo}
           alt={`Photo of ${member.name}`}
           fill
-          sizes="128px"
+          sizes="( max-width: 640px ) 100vw, 128px"
           className="object-cover object-center relative z-10"
           onError={() => setImgError(true)}
         />

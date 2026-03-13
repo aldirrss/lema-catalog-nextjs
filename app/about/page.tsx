@@ -65,6 +65,7 @@ export default function AboutPage() {
     {
       name: 'Aldi',
       role: 'Technical Expert',
+      bio: 'Aldi is a seasoned Odoo developer with over 10 years of experience in building scalable ERP solutions for various industries.',
       photo: '/images/team/team-1.jpg',
       initials: 'AL',
       expertise: ['Odoo Backend', 'System Architecture', 'API Integration'],
@@ -77,6 +78,7 @@ export default function AboutPage() {
     { 
       name: 'Herul',  
       role: 'Odoo Software Developer',
+      bio: 'Herul is a passionate Odoo developer with extensive experience in customizing and extending Odoo applications.',
       photo: '/images/team/team-2.jpg', 
       initials: 'HR',
       expertise: ['Odoo Backend', 'System Architecture', 'API Integration'],
@@ -93,6 +95,8 @@ export default function AboutPage() {
       ? experts.map((expert) => ({
           name: expert.name,
           role: expert.role,
+          bio: expert.bio,
+          subtitle: expert.subtitle,
           photo: expert.photo_url ?? '/images/team/team-1.jpg',
           initials: expert.initials || expert.name.slice(0, 2).toUpperCase(),
           expertise: expert.expertise,
@@ -180,7 +184,13 @@ export default function AboutPage() {
                     <p className="text-sm font-medium mt-1 text-brand-600">
                       {member.role}
                     </p>
-                    
+
+                    {member.bio && (
+                      <p className="mt-4 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+                        {member.bio}
+                      </p>
+                    )}  
+
                     {/* Expertise */}
                     <div className="mt-4 flex flex-wrap justify-center gap-2">
                       {member.expertise?.map((skill) => (
