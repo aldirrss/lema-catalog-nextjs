@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ModuleDetail, ModuleFeedback, DependModule } from '@/types';
@@ -67,6 +67,27 @@ function Lightbox({
   const next = () => setIdx((i) => (i + 1) % images.length);
   const img = images[idx];
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key === 'ArrowLeft') {
+        setIdx((i) => (i - 1 + images.length) % images.length);
+      }
+      if (event.key === 'ArrowRight') {
+        setIdx((i) => (i + 1) % images.length);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [images.length, onClose]);
+
   return (
     <div
       onClick={onClose}
@@ -75,9 +96,12 @@ function Lightbox({
         backgroundColor: 'rgba(0,0,0,0.92)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexDirection: 'column',
+        padding: '3.25rem 0.75rem 1.25rem',
+        boxSizing: 'border-box',
       }}
     >
       <button
+        className="lightbox-nav lightbox-nav-prev"
         onClick={(e) => { e.stopPropagation(); prev(); }}
         style={{
           position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)',
@@ -89,11 +113,31 @@ function Lightbox({
 
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ position: 'relative', maxWidth: '80vw', maxHeight: '75vh', width: '100%' }}
+        style={{
+          width: '100%',
+          maxWidth: 'min(96vw, 1200px)',
+          maxHeight: 'calc(100dvh - 180px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
-          <Image src={img.url} alt={img.alt} fill style={{ objectFit: 'contain' }} sizes="80vw" />
-        </div>
+        <Image
+          src={img.url}
+          alt={img.alt}
+          width={1920}
+          height={1080}
+          unoptimized
+          sizes="(max-width: 768px) 96vw, 80vw"
+          style={{
+            maxWidth: '100%',
+            maxHeight: 'calc(100dvh - 220px)',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+            borderRadius: '0.5rem',
+          }}
+        />
       </div>
 
       {/* Caption + counter di bawah gambar */}
@@ -115,6 +159,7 @@ function Lightbox({
       </div>
 
       <button
+        className="lightbox-nav lightbox-nav-next"
         onClick={(e) => { e.stopPropagation(); next(); }}
         style={{
           position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)',
@@ -132,6 +177,23 @@ function Lightbox({
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem',
         }}
       >✕</button>
+      <style>{`
+        @media (max-width: 640px) {
+          .lightbox-nav {
+            top: auto !important;
+            bottom: 1rem;
+            transform: none !important;
+            width: 40px !important;
+            height: 40px !important;
+          }
+          .lightbox-nav-prev {
+            left: calc(50% - 52px) !important;
+          }
+          .lightbox-nav-next {
+            right: calc(50% - 52px) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

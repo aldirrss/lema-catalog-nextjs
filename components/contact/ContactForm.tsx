@@ -69,21 +69,42 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <div>
-        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
-          {t.contact.company}
-        </label>
-        <input
-          name="company" type="text"
-          placeholder="Your company name"
-          style={{
-            width: '100%', borderRadius: '0.5rem', border: '1px solid #d1d5db',
-            padding: '0.625rem 0.875rem', fontSize: '0.875rem',
-            outline: 'none', boxSizing: 'border-box',
-            background: 'var(--bg-card)',
-            color: 'var(--text-primary)',
-          }}
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <div>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+            Phone
+          </label>
+          <input
+            name="phone" type="text"
+            placeholder="+62 812 3456 7890"
+            style={{
+              width: '100%', borderRadius: '0.5rem',
+              border: `1px solid ${state.errors?.phone ? '#f87171' : '#d1d5db'}`,
+              padding: '0.625rem 0.875rem', fontSize: '0.875rem',
+              outline: 'none', boxSizing: 'border-box',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+            }}
+          />
+          {state.errors?.phone && <p style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#dc2626' }}>{state.errors.phone}</p>}
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+            {t.contact.company}
+          </label>
+          <input
+            name="company" type="text"
+            placeholder="Your company name"
+            style={{
+              width: '100%', borderRadius: '0.5rem', border: '1px solid #d1d5db',
+              padding: '0.625rem 0.875rem', fontSize: '0.875rem',
+              outline: 'none', boxSizing: 'border-box',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+            }}
+          />
+        </div>
       </div>
 
       <div>

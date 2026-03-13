@@ -14,6 +14,7 @@ export async function submitContact(
 ): Promise<ContactFormState> {
   const name = (formData.get('name') as string)?.trim();
   const email = (formData.get('email') as string)?.trim();
+  const phone = (formData.get('phone') as string)?.trim();
   const company = (formData.get('company') as string)?.trim();
   const message = (formData.get('message') as string)?.trim();
 
@@ -30,11 +31,17 @@ export async function submitContact(
   }
 
   try {
-    const result = await submitContactForm({ name, email, company, message });
+    const result = await submitContactForm({
+      name,
+      email,
+      phone,
+      company,
+      message,
+    });
     if (result.success) {
       return { success: true, message: result.message ?? 'Message sent successfully!' };
     }
-    return { success: false, message: result.error ?? 'Something went wrong. Please try again.' };
+    return { success: false, message: result.error ?? result.message ?? 'Something went wrong. Please try again.' };
   } catch {
     return { success: false, message: 'Unable to send message. Please try again later.' };
   }

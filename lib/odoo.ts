@@ -153,6 +153,7 @@ export async function submitModuleFeedback(body: {
 export async function submitContactForm(body: {
   name: string;
   email: string;
+  phone: string;
   company?: string;
   message: string;
 }): Promise<{ success: boolean; message?: string; error?: string }> {
@@ -162,5 +163,43 @@ export async function submitContactForm(body: {
     body: JSON.stringify(body),
     cache: 'no-store', // Form submission selalu fresh
   });
-  return res.json();
+
+  const contentType = res.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    if (!res.ok) {
+      return {
+        success: false,
+        error: `Contact endpoint failed (${res.status}).`,
+      };
+    }
+    return {
+      success: false,
+      error: 'Contact endpoint returned non-JSON response.',
+    };
+  }
+
+  const data = (await res.json()) as {
+    success?: boolean;
+    message?: string;
+    error?: string;
+    result?: {
+      error?: string;
+      message?: string;
+    };
+  };
+
+  const apiError = data.error ?? data.message ?? data.result?.error ?? data.result?.message;
+
+  if (!res.ok) {
+    return {
+      success: false,
+      error: apiError ?? `Contact endpoint failed (${res.status}).`,
+    };
+  }
+
+  return {
+    success: data.success ?? true,
+    message: data.message,
+    error: data.error,
+  };
 }
