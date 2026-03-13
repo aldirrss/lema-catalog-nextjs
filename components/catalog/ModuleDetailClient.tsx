@@ -499,7 +499,7 @@ function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl:
                   {imgUrl ? (
                     <Image
                       src={imgUrl}
-                        alt={dep.name}
+                      alt={dep.name}
                       fill
                       style={{ objectFit: 'cover' }}
                       sizes="200px"
