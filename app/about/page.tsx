@@ -74,6 +74,18 @@ export default function AboutPage() {
       contact: 'mailto:aldirosidsaputra@gmail.com',
       projects: '15+',
     },
+    { 
+      name: 'Herul',  
+      role: 'Odoo Software Developer',
+      photo: '/images/team/team-2.jpg', 
+      initials: 'HR',
+      expertise: ['Odoo Backend', 'System Architecture', 'API Integration'],
+      linkedin: 'https://linkedin.com/in/herulramdani',
+      instagram: 'https://instagram.com/herulramdani',
+      portfolio: 'https://herul.lemacore.com',
+      contact: 'mailto:herulramdani@gmail.com',
+      projects: '50+'
+    },
   ];
 
   const teamMembers: TeamMember[] =
