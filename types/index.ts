@@ -1,0 +1,188 @@
+// ============================================================
+// Domain Types — matches the Odoo REST API response shapes
+// ============================================================
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  module_count: number;
+}
+
+export interface Feature {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface Screenshot {
+  id: number;
+  image_url: string;
+  sequence: number;
+  caption?: string;
+}
+
+export type OdooVersion = '19' | '18' | '17' | '16' | '15' | '14' | '13' | '12' | '11' | '10' | '9' | '8';
+
+export const ODOO_VERSIONS: { value: OdooVersion; label: string }[] = [
+  { value: '19', label: 'Odoo 19' },
+  { value: '18', label: 'Odoo 18' },
+  { value: '17', label: 'Odoo 17' },
+  { value: '16', label: 'Odoo 16' },
+  { value: '15', label: 'Odoo 15' },
+  { value: '14', label: 'Odoo 14' },
+  { value: '13', label: 'Odoo 13' },
+  { value: '12', label: 'Odoo 12' },
+  { value: '11', label: 'Odoo 11' },
+  { value: '10', label: 'Odoo 10' },
+  { value: '9', label: 'Odoo 9' },
+  { value: '8', label: 'Odoo 8' },
+];
+
+export const SORT_OPTIONS = [
+  { value: '',              label: 'Sort By' },
+  { value: 'newest',        label: 'Newest' },
+  { value: 'oldest',        label: 'Oldest' },
+  { value: 'name_asc',      label: 'Name A → Z' },
+  { value: 'name_desc',     label: 'Name Z → A' },
+  { value: 'price_asc',     label: 'Price: Low to High' },
+  { value: 'price_desc',    label: 'Price: High to Low' },
+  { value: 'rating_desc',   label: 'Top Rated' },
+  { value: 'top_purchase',  label: 'Top Purchase' },
+];
+
+export const PRICE_OPTIONS = [
+  { value: '',      label: 'All Prices' },
+  { value: 'free',  label: 'Free' },
+  { value: 'paid',  label: 'Paid' },
+];
+
+export interface ModuleVersion {
+  id: number;
+  odoo_version: OdooVersion;
+  download_url: string;
+  notes: string;
+}
+
+export interface Module {
+  id: number;
+  name: string;
+  slug: string;
+  technical_name: string;
+  short_description: string;
+  /** Array of supported versions with download links */
+  versions: ModuleVersion[];
+  /** Flat array of version numbers e.g. ['17', '18'] — for filtering */
+  odoo_versions: OdooVersion[];
+  price: number;
+  rating: number;
+  featured: boolean;
+  cover_image_url: string | null;
+  github_url: string;
+  documentation_url: string;
+  demo_url: string;
+  created_date: string | null;
+  category: Pick<Category, 'id' | 'name'> | null;
+  feature_count: number;
+  screenshot_count: number;
+  count_download: number;
+  count_purchase: number;
+  /** count_download jika free, count_purchase jika paid */
+  popularity_count: number;
+}
+
+export interface ReleaseNote {
+  id: number;
+  version: string;
+  release_date: string | null;
+  notes: string;
+}
+
+export interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+  sequence: number;
+}
+
+export interface ModuleFeedback {
+  id: number;
+  author_name: string;
+  rating: number;
+  comment: string;
+  created_date: string;
+}
+
+export interface DependModule {
+  id: number;
+  name: string;
+  slug: string;
+  cover_image_url: string | null;
+  technical_name: string;
+}
+
+export interface TechnicalExpert {
+  id: number;
+  name: string;
+  role: string;
+  subtitle: string;
+  bio: string;
+  initials: string;
+  photo_url: string | null;
+  expertise: string[];
+  projects: string;
+  linkedin: string;
+  instagram: string;
+  portfolio: string;
+  contact: string;
+}
+
+export interface ModuleDetail extends Module {
+  description: string;
+  license: string;
+  features: Feature[];
+  screenshots: Screenshot[];
+  release_notes: ReleaseNote[];
+  faqs: FAQ[];
+  feedbacks: ModuleFeedback[];
+  feedback_count: number;
+  depends_modules: DependModule[];
+}
+
+// ============================================================
+// API Response wrappers
+// ============================================================
+
+export interface ApiListResponse<T> {
+  success: boolean;
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+export interface ApiSingleResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+export interface ApiErrorResponse {
+  success: false;
+  error: string;
+}
+
+// ============================================================
+// UI / filter types
+// ============================================================
+
+export interface CatalogFilters {
+  search: string;
+  category_id: string;
+  odoo_version: string;
+  price: string;
+  sort_by: string;
+  page: number;
+}

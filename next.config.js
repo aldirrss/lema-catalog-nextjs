@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'http',
-        hostname: 'erp.lemacore.com',
+        hostname: 'localhost',
         port: '8018',
         pathname: '/**',
       },
@@ -20,7 +20,7 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    unoptimized: process.env.NODE_ENV === 'production', // Disable optimization in production
+    unoptimized: process.env.NODE_ENV === 'development', // Disable optimization in development
   },
 };
 
