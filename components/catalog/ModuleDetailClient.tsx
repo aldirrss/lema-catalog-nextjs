@@ -577,7 +577,7 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   }));
 
   const coverUrl = mod.cover_image_url
-    ? (mod.cover_image_url.startsWith('http') ? mod.cover_image_url : `${odooUrl}${mod.cover_image_url}`)
+    ? (mod.cover_image_url ? mod.cover_image_url : `${odooUrl}${mod.cover_image_url}`)
     : null;
 
   const handleFeedbackSubmit = async () => {
