@@ -457,7 +457,7 @@ function DependsSlider({ modules, odooUrl }: { modules: DependModule[]; odooUrl:
         >
           {modules.map((dep) => {
             const imgUrl = dep.cover_image_url
-              ? (dep.cover_image_url.startsWith('https') ? dep.cover_image_url : `${odooUrl}${dep.cover_image_url}`)
+              ? (dep.cover_image_url.startsWith('http') ? dep.cover_image_url : `${odooUrl}${dep.cover_image_url}`)
               : null;
 
             return (
@@ -571,13 +571,13 @@ export default function ModuleDetailClient({ mod, odooUrl }: Props) {
   const { t, lang } = useLang();
 
   const images = mod.screenshots.map((ss, i) => ({
-    url: ss.image_url.startsWith('https') ? ss.image_url : `${odooUrl}${ss.image_url}`,
+    url: ss.image_url.startsWith('http') ? ss.image_url : `${odooUrl}${ss.image_url}`,
     alt: ss.caption || `Screenshot ${i + 1}`,
     caption: ss.caption || '',
   }));
 
   const coverUrl = mod.cover_image_url
-    ? (mod.cover_image_url.startsWith('https') ? mod.cover_image_url : `${odooUrl}${mod.cover_image_url}`)
+    ? (mod.cover_image_url.startsWith('http') ? mod.cover_image_url : `${odooUrl}${mod.cover_image_url}`)
     : null;
 
   const handleFeedbackSubmit = async () => {
