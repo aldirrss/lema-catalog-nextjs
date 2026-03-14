@@ -38,6 +38,8 @@ export type TranslationKeys = {
     catalog: string;
     about: string;
     forum: string;
+    threads: string;
+    article: string;
     contact: string;
     getInTouch: string;
   };
@@ -270,6 +272,20 @@ export type TranslationKeys = {
     notFound: string;
     backHome: string;
     featured: string;
+  };
+  // Article
+  article: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    noArticles: string;
+    noArticlesDesc: string;
+    cardView: string;
+    listView: string;
+    readMore: string;
+    lastUpdated: string;
+    backToArticles: string;
+    tableOfContents: string;
   };
   // Services
   services: {
