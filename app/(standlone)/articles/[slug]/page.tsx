@@ -617,7 +617,6 @@ export default function ArticleDetailPage() {
             {error && !loading && (
               <motion.div
                 key="error"
-                variants={contentVariants}
                 initial="initial"
                 animate="enter"
                 exit="exit"
@@ -640,7 +639,6 @@ export default function ArticleDetailPage() {
             {!loading && article && (
               <motion.article
                 key={slug}
-                variants={contentVariants}
                 initial="initial"
                 animate="enter"
                 exit="exit"
