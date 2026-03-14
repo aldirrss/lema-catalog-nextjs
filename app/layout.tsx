@@ -88,6 +88,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
     >
       <head>
+        {/* Organization */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -96,13 +97,51 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               '@type': 'Organization',
               name: 'Lema Core Technologies',
               url: siteUrl,
-              logo: `${siteUrl}/icon.png`,
+              logo: {
+                '@type': 'ImageObject',
+                url: `${siteUrl}/icon.png`,
+                width: 512,
+                height: 512,
+              },
               sameAs: [siteUrl],
               description: 'Odoo development studio providing premium modules, implementation, and customization services.',
               knowsLanguage: ['en', 'id', 'ar', 'fr', 'zh', 'es'],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'customer support',
+                availableLanguage: ['English', 'Indonesian'],
+              },
             }),
           }}
         />
+
+        {/* WebSite + SiteLinksSearchBox — enables Google search box & sitelinks */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Lema Core Technologies',
+              alternateName: 'LemaCore',
+              url: siteUrl,
+              inLanguage: ['en', 'id', 'ar', 'fr', 'zh', 'es'],
+              description: 'Premium Odoo modules and expert ERP solutions.',
+              potentialAction: [
+                {
+                  '@type': 'SearchAction',
+                  target: {
+                    '@type': 'EntryPoint',
+                    urlTemplate: `${siteUrl}/catalog?search={search_term_string}`,
+                  },
+                  'query-input': 'required name=search_term_string',
+                },
+              ],
+            }),
+          }}
+        />
+
+        {/* SiteLinksSearchBox — dedicated structured data for sitelinks */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -111,12 +150,76 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               '@type': 'WebSite',
               name: 'Lema Core Technologies',
               url: siteUrl,
-              inLanguage: ['en', 'id', 'ar', 'fr', 'zh', 'es'],
               potentialAction: {
                 '@type': 'SearchAction',
                 target: `${siteUrl}/catalog?search={search_term_string}`,
                 'query-input': 'required name=search_term_string',
               },
+            }),
+          }}
+        />
+
+        {/* ItemList — all main nav pages, signals sitelinks to Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: 'Lema Core Technologies — Main Navigation',
+              itemListElement: [
+                {
+                  '@type': 'SiteLinksSearchBox',
+                  url: siteUrl,
+                  potentialAction: {
+                    '@type': 'SearchAction',
+                    target: `${siteUrl}/catalog?search={search_term_string}`,
+                    'query-input': 'required name=search_term_string',
+                  },
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: 'Home',
+                  description: 'Lema Core Technologies — Odoo Module Catalog & ERP Solutions',
+                  url: siteUrl,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: 'Module Catalog',
+                  description: 'Browse all premium Odoo modules developed by Lema Core Technologies',
+                  url: `${siteUrl}/catalog`,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: 'About Us',
+                  description: 'Learn about our team, mission, and Odoo expertise',
+                  url: `${siteUrl}/about`,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 4,
+                  name: 'Forum',
+                  description: 'Community discussion forum for Odoo developers and users',
+                  url: `${siteUrl}/forum`,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 5,
+                  name: 'Articles',
+                  description: 'Knowledge base — guides, tutorials, and Odoo documentation',
+                  url: `${siteUrl}/articles`,
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 6,
+                  name: 'Contact',
+                  description: 'Get in touch with our Odoo development team',
+                  url: `${siteUrl}/contact`,
+                },
+              ],
             }),
           }}
         />
