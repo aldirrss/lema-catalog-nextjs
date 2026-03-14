@@ -182,6 +182,8 @@ function ArticleSidebar({
   currentSlug,
   collapsed,
   onCollapse,
+  width,
+  onWidthChange,
   mobileOpen,
   onMobileClose,
   onNavigate,
@@ -190,10 +192,50 @@ function ArticleSidebar({
   currentSlug: string;
   collapsed: boolean;
   onCollapse: (v: boolean) => void;
+  width: number;
+  onWidthChange: (w: number) => void;
   mobileOpen: boolean;
   onMobileClose: () => void;
   onNavigate: (slug: string) => void;
 }) {
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startWidth = useRef(width);
+
+  // Min / max sidebar width
+  const MIN_WIDTH = 180;
+  const MAX_WIDTH = 480;
+  const COLLAPSED_WIDTH = 52;
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    if (collapsed) return;
+    isDragging.current = true;
+    startX.current = e.clientX;
+    startWidth.current = width;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMove = (ev: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = ev.clientX - startX.current;
+      const next = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth.current + delta));
+      onWidthChange(next);
+    };
+
+    const onUp = () => {
+      isDragging.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [collapsed, width, onWidthChange]);
+
+  const currentWidth = collapsed ? COLLAPSED_WIDTH : width;
+
   return (
     <>
       {/* Mobile overlay */}
@@ -216,138 +258,175 @@ function ArticleSidebar({
         )}
       </AnimatePresence>
 
-      <motion.aside
-        className={`article-sidebar ${mobileOpen ? 'sidebar-open' : ''}`}
-        animate={{ width: collapsed ? 52 : 260 }}
-        transition={{ duration: 0.25, ease }}
+      {/* Sidebar + drag handle wrapper */}
+      <div
+        className={`article-sidebar-wrapper ${mobileOpen ? 'sidebar-open' : ''}`}
         style={{
-          flexShrink: 0,
-          backgroundColor: 'var(--bg-card)',
-          borderRight: '1px solid var(--border-card)',
-          height: '100vh', position: 'sticky', top: 0,
-          overflowY: 'auto', overflowX: 'hidden',
-          display: 'flex', flexDirection: 'column',
+          position: 'sticky', top: 0,
+          height: '100vh', flexShrink: 0,
+          display: 'flex',
+          width: currentWidth,
+          transition: isDragging.current ? 'none' : 'width 0.25s ease',
         }}
       >
-        {/* Header */}
-        <div style={{
-          padding: collapsed ? '0.875rem 0' : '0.875rem 0.75rem',
-          borderBottom: '1px solid var(--border-card)',
-          display: 'flex', alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'space-between',
-          position: 'sticky', top: 0, zIndex: 5,
-          backgroundColor: 'var(--bg-card)',
-          gap: '0.5rem', flexShrink: 0,
-          transition: 'padding 0.25s ease',
-        }}>
-          <AnimatePresence mode="wait">
-            {!collapsed && (
-              <motion.a
-                key="back-link"
-                href="/articles"
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0, transition: { duration: 0.2, ease } }}
-                exit={{ opacity: 0, x: -8, transition: { duration: 0.15 } }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.4rem',
-                  textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600,
-                  color: 'var(--brand-primary)', whiteSpace: 'nowrap', overflow: 'hidden',
-                }}
+        <motion.aside
+          className="article-sidebar"
+          animate={{ width: currentWidth }}
+          transition={{ duration: isDragging.current ? 0 : 0.25, ease }}
+          style={{
+            flex: 1, minWidth: 0,
+            backgroundColor: 'var(--bg-card)',
+            borderRight: '1px solid var(--border-card)',
+            height: '100%',
+            overflowY: 'auto', overflowX: 'hidden',
+            display: 'flex', flexDirection: 'column',
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            padding: collapsed ? '0.875rem 0' : '0.875rem 0.75rem',
+            borderBottom: '1px solid var(--border-card)',
+            display: 'flex', alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'space-between',
+            position: 'sticky', top: 0, zIndex: 5,
+            backgroundColor: 'var(--bg-card)',
+            gap: '0.5rem', flexShrink: 0,
+            transition: 'padding 0.25s ease',
+          }}>
+            <AnimatePresence mode="wait">
+              {!collapsed && (
+                <motion.a
+                  key="back-link"
+                  href="/articles"
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0, transition: { duration: 0.2, ease } }}
+                  exit={{ opacity: 0, x: -8, transition: { duration: 0.15 } }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600,
+                    color: 'var(--brand-primary)', whiteSpace: 'nowrap', overflow: 'hidden',
+                  }}
+                >
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  All Articles
+                </motion.a>
+              )}
+            </AnimatePresence>
+
+            {/* Collapse toggle */}
+            <button
+              onClick={() => onCollapse(!collapsed)}
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className="sidebar-toggle-btn"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '1.75rem', height: '1.75rem', flexShrink: 0,
+                borderRadius: '0.375rem', border: '1px solid var(--border-card)',
+                backgroundColor: 'var(--bg-surface)', color: 'var(--text-muted)',
+                cursor: 'pointer', transition: 'all 0.12s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--brand-primary)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--brand-primary)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-card)'; }}
+            >
+              <motion.svg
+                width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                animate={{ rotate: collapsed ? 0 : 180 }}
+                transition={{ duration: 0.25, ease }}
               >
-                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
-                All Articles
-              </motion.a>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7"/>
+              </motion.svg>
+            </button>
+
+            {/* Mobile close */}
+            <button
+              onClick={onMobileClose}
+              className="sidebar-close-btn"
+              style={{
+                display: 'none', alignItems: 'center', justifyContent: 'center',
+                width: '1.75rem', height: '1.75rem', flexShrink: 0,
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--text-muted)', borderRadius: '0.25rem',
+              }}
+            >
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Tree nav */}
+          <nav style={{
+            padding: collapsed ? '0.625rem 0.5rem' : '0.75rem 0.625rem',
+            flex: 1,
+            display: 'flex', flexDirection: 'column', gap: collapsed ? '0.125rem' : '0',
+            transition: 'padding 0.25s ease',
+          }}>
+            {tree.map((node, i) => (
+              <SidebarNode
+                key={node.id}
+                node={node}
+                currentSlug={currentSlug}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+                index={i}
+              />
+            ))}
+          </nav>
+
+          {/* Collapsed bottom back link */}
+          <AnimatePresence>
+            {collapsed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { delay: 0.15, duration: 0.2 } }}
+                exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                style={{ padding: '0.625rem 0.5rem', borderTop: '1px solid var(--border-card)', display: 'flex', justifyContent: 'center' }}
+              >
+                <a href="/articles" title="All Articles" style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '2rem', height: '2rem', borderRadius: '0.375rem',
+                  color: 'var(--brand-primary)', textDecoration: 'none',
+                  transition: 'background-color 0.12s',
+                }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-surface)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
+                >
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                </a>
+              </motion.div>
             )}
           </AnimatePresence>
+        </motion.aside>
 
-          {/* Collapse toggle */}
-          <button
-            onClick={() => onCollapse(!collapsed)}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="sidebar-toggle-btn"
+        {/* ── Drag handle ── */}
+        {!collapsed && (
+          <div
+            onMouseDown={handleDragStart}
+            className="sidebar-drag-handle"
+            title="Drag to resize"
             style={{
+              width: '6px',
+              flexShrink: 0,
+              cursor: 'col-resize',
+              position: 'relative',
+              zIndex: 10,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '1.75rem', height: '1.75rem', flexShrink: 0,
-              borderRadius: '0.375rem', border: '1px solid var(--border-card)',
-              backgroundColor: 'var(--bg-surface)', color: 'var(--text-muted)',
-              cursor: 'pointer', transition: 'all 0.12s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--brand-primary)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--brand-primary)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-card)'; }}
-          >
-            <motion.svg
-              width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
-              animate={{ rotate: collapsed ? 0 : 180 }}
-              transition={{ duration: 0.25, ease }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7M19 19l-7-7 7-7"/>
-            </motion.svg>
-          </button>
-
-          {/* Mobile close */}
-          <button
-            onClick={onMobileClose}
-            className="sidebar-close-btn"
-            style={{
-              display: 'none', alignItems: 'center', justifyContent: 'center',
-              width: '1.75rem', height: '1.75rem', flexShrink: 0,
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--text-muted)', borderRadius: '0.25rem',
             }}
           >
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-
-        {/* Tree */}
-        <nav style={{
-          padding: collapsed ? '0.625rem 0.5rem' : '0.75rem 0.625rem',
-          flex: 1,
-          display: 'flex', flexDirection: 'column', gap: collapsed ? '0.125rem' : '0',
-          transition: 'padding 0.25s ease',
-        }}>
-          {tree.map((node, i) => (
-            <SidebarNode
-              key={node.id}
-              node={node}
-              currentSlug={currentSlug}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-              index={i}
-            />
-          ))}
-        </nav>
-
-        {/* Collapsed bottom — back link icon */}
-        <AnimatePresence>
-          {collapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 0.15, duration: 0.2 } }}
-              exit={{ opacity: 0, transition: { duration: 0.1 } }}
-              style={{ padding: '0.625rem 0.5rem', borderTop: '1px solid var(--border-card)', display: 'flex', justifyContent: 'center' }}
-            >
-              <a href="/articles" title="All Articles" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '2rem', height: '2rem', borderRadius: '0.375rem',
-                color: 'var(--brand-primary)', textDecoration: 'none',
-                transition: 'background-color 0.12s',
-              }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-surface)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
-              >
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.aside>
+            {/* Visual indicator */}
+            <div className="drag-handle-bar" style={{
+              width: '3px', height: '40px',
+              borderRadius: '2px',
+              backgroundColor: 'var(--border-card)',
+              transition: 'background-color 0.15s, transform 0.15s',
+            }} />
+          </div>
+        )}
+      </div>
     </>
   );
 }
@@ -437,6 +516,7 @@ export default function ArticleDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -483,6 +563,8 @@ export default function ArticleDetailPage() {
         currentSlug={slug}
         collapsed={sidebarCollapsed}
         onCollapse={setSidebarCollapsed}
+        width={sidebarWidth}
+        onWidthChange={setSidebarWidth}
         mobileOpen={mobileSidebarOpen}
         onMobileClose={() => setMobileSidebarOpen(false)}
         onNavigate={handleNavigate}
@@ -535,6 +617,7 @@ export default function ArticleDetailPage() {
             {error && !loading && (
               <motion.div
                 key="error"
+                variants={contentVariants}
                 initial="initial"
                 animate="enter"
                 exit="exit"
@@ -557,6 +640,7 @@ export default function ArticleDetailPage() {
             {!loading && article && (
               <motion.article
                 key={slug}
+                variants={contentVariants}
                 initial="initial"
                 animate="enter"
                 exit="exit"
@@ -739,21 +823,38 @@ export default function ArticleDetailPage() {
         .article-sidebar::-webkit-scrollbar-track { background:transparent; }
         .article-sidebar::-webkit-scrollbar-thumb { background:var(--border-card); border-radius:2px; }
 
+        /* ── Drag handle hover ─────────────────────────────── */
+        .sidebar-drag-handle:hover .drag-handle-bar {
+          background-color: var(--brand-primary) !important;
+          transform: scaleY(1.4);
+        }
+        .sidebar-drag-handle:active .drag-handle-bar {
+          background-color: var(--brand-primary) !important;
+          transform: scaleY(1.6);
+        }
+
+        /* ── Animations ────────────────────────────────────── */
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
+        /* ── Mobile ────────────────────────────────────────── */
         @media (max-width:768px) {
-          .article-sidebar {
-            position:fixed !important; left:0; top:0; bottom:0; z-index:45;
-            transform:translateX(-100%);
-            transition:transform 0.28s ease !important;
-            box-shadow:4px 0 24px rgba(0,0,0,0.18);
-            width:260px !important;
+          .article-sidebar-wrapper {
+            position: fixed !important;
+            left: 0; top: 0; bottom: 0; z-index: 45;
+            transform: translateX(-100%);
+            transition: transform 0.28s ease !important;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+            width: 260px !important;
+            height: 100vh;
           }
-          .article-sidebar.sidebar-open { transform:translateX(0); }
-          .mobile-overlay { display:block !important; }
-          .sidebar-close-btn { display:flex !important; }
-          .sidebar-toggle-btn { display:none !important; }
-          .mobile-topbar { display:flex !important; }
+          .article-sidebar-wrapper.sidebar-open {
+            transform: translateX(0);
+          }
+          .sidebar-drag-handle { display: none !important; }
+          .mobile-overlay { display: block !important; }
+          .sidebar-close-btn { display: flex !important; }
+          .sidebar-toggle-btn { display: none !important; }
+          .mobile-topbar { display: flex !important; }
         }
       `}</style>
     </div>
